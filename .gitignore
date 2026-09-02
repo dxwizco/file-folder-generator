@@ -1,0 +1,24 @@
+out/
+dist/
+node_modules/
+.vscode-test/
+*.vsix
+
+# Local documentation/drafts
+
+_docs/
+
+# Logs
+
+*.log
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# Local environment files
+
+.env
+.env.*
+!.env.example

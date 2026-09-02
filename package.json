@@ -1,0 +1,65 @@
+{
+  "name": "fileforge",
+  "displayName": "FileForge",
+  "description": "Generate project file and folder structures from FileForge definitions embedded in Markdown.",
+  "version": "0.1.0",
+  "publisher": "DXWIZ",
+  "license": "MIT",
+  "icon": "./assets/images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dxwizco/fileforge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dxwizco/fileforge/issues"
+  },
+  "homepage": "https://github.com/dxwizco/fileforge#readme",
+  "galleryBanner": {
+    "color": "#24292F",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "fileforge",
+    "code generation",
+    "project generator",
+    "scaffolding",
+    "markdown",
+    "file structure",
+    "code generation"
+  ],
+  "main": "./dist/interfaces/vscode/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "fileforge.preview",
+        "title": "FileForge: Preview"
+      },
+      {
+        "command": "fileforge.generate",
+        "title": "FileForge: Generate"
+      },
+      {
+        "command": "fileforge.generateAndOverwrite",
+        "title": "FileForge: Generate and Overwrite"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./tsconfig.json",
+    "watch": "tsc -watch -p ./tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "@types/vscode": "^1.134.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}
