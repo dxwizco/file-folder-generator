@@ -1,52 +1,66 @@
 {
-  "name": "fileforge",
-  "displayName": "FileForge",
-  "description": "Generate project file and folder structures from FileForge definitions embedded in Markdown.",
+  "name": "dxwiz-file-folder-generator",
+  "displayName": "File & Folder Generator",
+  "description": "Create and maintain files and folders from Markdown-based definitions. Preview changes, validate structures, and safely create, update, or overwrite files with optional templates and generated headers.",
   "version": "0.1.0",
   "publisher": "DXWIZ",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "icon": "./assets/images/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dxwizco/fileforge.git"
+    "url": "https://github.com/dxwizco/file-folder-generator.git"
   },
   "bugs": {
-    "url": "https://github.com/dxwizco/fileforge/issues"
+    "url": "https://github.com/dxwizco/file-folder-generator/issues"
   },
-  "homepage": "https://github.com/dxwizco/fileforge#readme",
+  "homepage": "https://github.com/dxwizco/file-folder-generator#readme",
   "galleryBanner": {
     "color": "#24292F",
     "theme": "dark"
   },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.134.0"
   },
   "categories": [
     "Other"
   ],
   "keywords": [
-    "fileforge",
-    "code generation",
+    "file generator",
+    "file structure",
+    "file creation",
+    "folder generator",
+    "folder structure",
+    "folder creation",
+    "project structure",
+    "project scaffolding",
     "project generator",
     "scaffolding",
+    "directory generator",
+    "directory structure",
+    "project template",
+    "project templates",
+    "file templates",
+    "templates",
     "markdown",
-    "file structure",
-    "code generation"
+    "markdown definition",
+    "workspace setup",
+    "project setup",
+    "file and folder generator"
   ],
   "main": "./dist/interfaces/vscode/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "fileforge.preview",
-        "title": "FileForge: Preview"
+        "command": "dxwiz.preview",
+        "title": "File & Folder Generator: Preview"
       },
       {
-        "command": "fileforge.generate",
-        "title": "FileForge: Generate"
+        "command": "dxwiz.generate",
+        "title": "File & Folder Generator: Generate"
       },
       {
-        "command": "fileforge.generateAndOverwrite",
-        "title": "FileForge: Generate and Overwrite"
+        "command": "dxwiz.generateAndOverwrite",
+        "title": "File & Folder Generator: Generate and Overwrite"
       }
     ]
   },
@@ -59,6 +73,7 @@
   "devDependencies": {
     "@types/node": "^26.4.0",
     "@types/vscode": "^1.134.0",
+    "@vscode/vsce": "^3.9.2",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"
   }

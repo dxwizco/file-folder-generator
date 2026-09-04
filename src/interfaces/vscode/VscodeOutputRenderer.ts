@@ -2,91 +2,119 @@
 
 import * as vscode from "vscode";
 
-import type { ForgeResult } from "../../core/models/ForgeResult";
+import type { DXWIZResult } from "../../core/models/DXWIZResult";
 
 /**
- * Renders FileForge results inside VS Code.
+ * Renders concise File & Folder Generator results inside VS Code.
  *
  * This class is responsible only for presentation.
- * It does not perform any FileForge operations.
+ * It does not perform any File & Folder Generator operations.
+ *
+ * The detailed file structure is intentionally NOT rendered
+ * here. It is written to the generated .output.md report by
+ * ReportRenderer.
  */
 export class VscodeOutputRenderer {
   private readonly outputChannel: vscode.OutputChannel;
 
   constructor() {
-    this.outputChannel = vscode.window.createOutputChannel("FileForge");
+    this.outputChannel = vscode.window.createOutputChannel(
+      "File & Folder Generator",
+    );
   }
 
   /**
-   * Show a preview of the planned Forge operation.
+   * Show a concise preview result.
+   *
+   * The complete file structure is available in the
+   * generated .output.md report.
    */
-  public showPreview(result: ForgeResult): void {
+  public showPreview(result: DXWIZResult): void {
     this.outputChannel.clear();
 
-    this.outputChannel.appendLine("FileForge Preview");
+    this.outputChannel.appendLine("File & Folder Generator Preview");
     this.outputChannel.appendLine("=================");
     this.outputChannel.appendLine("");
 
+    this.outputChannel.appendLine("Mode: PREVIEW");
+    this.outputChannel.appendLine(
+      `Status: ${result.validation.valid ? "SUCCESS" : "FAILED"}`,
+    );
     this.outputChannel.appendLine(`Target: ${result.definition.target}`);
+
     this.outputChannel.appendLine("");
 
-    this.showStatistics(result);
+    this.showPlanSummary(result);
     this.showValidation(result);
-    this.showNodes(result);
+    this.showReportMessage();
 
     this.outputChannel.show(true);
   }
 
   /**
-   * Show the result after execution.
+   * Show a concise execution result.
+   *
+   * The complete file structure is available in the
+   * generated .output.md report.
    */
-  public showExecution(result: ForgeResult): void {
+  public showExecution(result: DXWIZResult): void {
     this.outputChannel.clear();
 
-    this.outputChannel.appendLine("FileForge Execution");
-    this.outputChannel.appendLine("==================");
+    this.outputChannel.appendLine("File & Folder Generator Execution");
+    this.outputChannel.appendLine("===================");
     this.outputChannel.appendLine("");
 
+    this.outputChannel.appendLine("Mode: GENERATE");
+    this.outputChannel.appendLine(
+      `Status: ${result.validation.valid ? "SUCCESS" : "FAILED"}`,
+    );
     this.outputChannel.appendLine(`Target: ${result.definition.target}`);
+
     this.outputChannel.appendLine("");
 
-    this.showStatistics(result);
+    this.showPlanSummary(result);
     this.showValidation(result);
-    this.showNodes(result);
 
     if (result.execution) {
+      this.showExecutionSummary(result);
+    } else {
+      this.outputChannel.appendLine("No filesystem changes were made.");
       this.outputChannel.appendLine("");
-      this.outputChannel.appendLine("Execution Statistics");
-      this.outputChannel.appendLine("---------------------");
-      this.outputChannel.appendLine(
-        `Folders created: ${result.execution.folders}`,
-      );
-      this.outputChannel.appendLine(
-        `Files created:   ${result.execution.created}`,
-      );
-      this.outputChannel.appendLine(
-        `Files updated:   ${result.execution.updated}`,
-      );
-      this.outputChannel.appendLine(
-        `Files skipped:   ${result.execution.skipped}`,
-      );
     }
+
+    this.showReportMessage();
 
     this.outputChannel.show(true);
   }
 
   /**
-   * Display validation errors and warnings.
+   * Display plan statistics and duplicate information.
    */
-  private showValidation(result: ForgeResult): void {
-    this.outputChannel.appendLine("Validation");
+  private showPlanSummary(result: DXWIZResult): void {
+    this.outputChannel.appendLine("PLAN SUMMARY");
+    this.outputChannel.appendLine("------------");
+
+    this.outputChannel.appendLine(`Folders planned:   ${result.plan.folders}`);
+
+    this.outputChannel.appendLine(`Files planned:     ${result.plan.files}`);
+
+    const duplicateCount = result.validation.duplicateCount ?? 0;
+
+    this.outputChannel.appendLine(`Duplicates found:  ${duplicateCount}`);
+
+    this.outputChannel.appendLine("");
+  }
+
+  /**
+   * Display validation status, warnings, and errors.
+   */
+  private showValidation(result: DXWIZResult): void {
+    this.outputChannel.appendLine("VALIDATION");
     this.outputChannel.appendLine("----------");
 
-    if (result.validation.valid) {
-      this.outputChannel.appendLine("Status: Valid");
-    } else {
-      this.outputChannel.appendLine("Status: Invalid");
-    }
+    this.outputChannel.appendLine(
+      `Status: ${result.validation.valid ? "Valid" : "Invalid"}`,
+    );
 
     if (result.validation.errors.length > 0) {
       this.outputChannel.appendLine("");
@@ -110,62 +138,46 @@ export class VscodeOutputRenderer {
   }
 
   /**
-   * Display plan statistics.
+   * Display actual filesystem execution statistics.
    */
-  private showStatistics(result: ForgeResult): void {
-    this.outputChannel.appendLine("Plan Statistics");
-    this.outputChannel.appendLine("---------------");
-    this.outputChannel.appendLine(`Folders: ${result.plan.folders}`);
-    this.outputChannel.appendLine(`Files:   ${result.plan.files}`);
-    this.outputChannel.appendLine("");
-  }
-
-  /**
-   * Display the planned/executed nodes.
-   */
-  private showNodes(result: ForgeResult): void {
-    this.outputChannel.appendLine("File Structure");
-    this.outputChannel.appendLine("--------------");
-
-    if (result.nodes.length === 0) {
-      this.outputChannel.appendLine("(No nodes found)");
+  private showExecutionSummary(result: DXWIZResult): void {
+    if (!result.execution) {
       return;
     }
 
-    for (const node of result.nodes) {
-      const action = this.getActionLabel(node.action);
+    this.outputChannel.appendLine("EXECUTION SUMMARY");
+    this.outputChannel.appendLine("-----------------");
 
-      const type = node.isFolder ? "📁" : "📄";
+    this.outputChannel.appendLine(
+      `Folders created:   ${result.execution.folders}`,
+    );
 
-      this.outputChannel.appendLine(`${type} ${node.relativePath}  ${action}`);
-    }
+    this.outputChannel.appendLine(
+      `Files created:     ${result.execution.created}`,
+    );
+
+    this.outputChannel.appendLine(
+      `Files updated:     ${result.execution.updated}`,
+    );
+
+    this.outputChannel.appendLine(
+      `Files skipped:     ${result.execution.skipped}`,
+    );
 
     this.outputChannel.appendLine("");
   }
 
   /**
-   * Convert an internal ForgeAction into readable output.
+   * Tell the user where the detailed file structure is located.
    */
-  private getActionLabel(action: string): string {
-    switch (action) {
-      case "folder":
-        return "[FOLDER]";
+  private showReportMessage(): void {
+    this.outputChannel.appendLine("DETAILED REPORT");
+    this.outputChannel.appendLine("---------------");
+    this.outputChannel.appendLine(
+      "See the generated .output.md file for the complete file structure.",
+    );
 
-      case "create":
-        return "[CREATE]";
-
-      case "update":
-        return "[UPDATE]";
-
-      case "skip":
-        return "[SKIP]";
-
-      case "none":
-        return "[NONE]";
-
-      default:
-        return `[${action.toUpperCase()}]`;
-    }
+    this.outputChannel.appendLine("");
   }
 
   /**

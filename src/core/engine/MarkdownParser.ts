@@ -1,13 +1,13 @@
 // src/ core/engine/MarkdownParser.ts
 
-import type { ForgeDefinition } from "../models/ForgeDefinition";
+import type { DXWIZDefinition } from "../models/DXWIZDefinition";
 
 /**
- * Parses a Markdown document containing a FileForge definition.
+ * Parses a Markdown document containing a DXWIZ definition.
  *
  * Expected format:
  *
- * ```fileforge
+ * ```dxwiz
  * target: "D:\Projects\MyProject"
  *
  * MyProject/
@@ -19,17 +19,17 @@ import type { ForgeDefinition } from "../models/ForgeDefinition";
  * The parser is intentionally filesystem-independent.
  * It only parses the Markdown document.
  *
- * Filesystem validation is performed later by ForgeEngine
+ * Filesystem validation is performed later by DXWIZEngine
  * through the FileSystem abstraction.
  */
 export class MarkdownParser {
   /**
-   * Parse a Markdown document and extract its FileForge definition.
+   * Parse a Markdown document and extract its DXWIZ definition.
    */
-  parse(content: string): ForgeDefinition {
+  parse(content: string): DXWIZDefinition {
     const lines = content.split(/\r?\n/);
 
-    const blockLines = this.extractFileForgeBlock(lines);
+    const blockLines = this.extractDXWIZBlock(lines);
 
     const targetIndex = blockLines.findIndex((line) => this.isTargetLine(line));
 
@@ -54,9 +54,9 @@ export class MarkdownParser {
   }
 
   /**
-   * Extract the first ```fileforge block.
+   * Extract the first ```dxwiz block.
    */
-  private extractFileForgeBlock(lines: string[]): string[] {
+  private extractDXWIZBlock(lines: string[]): string[] {
     const result: string[] = [];
 
     let inside = false;
@@ -65,7 +65,7 @@ export class MarkdownParser {
       const trimmed = line.trim();
 
       if (!inside) {
-        if (trimmed === "```fileforge") {
+        if (trimmed === "```dxwiz") {
           inside = true;
         }
 
@@ -80,7 +80,7 @@ export class MarkdownParser {
     }
 
     if (result.length === 0) {
-      throw new Error("No fileforge block found in the document.");
+      throw new Error("No dxwiz block found in the document.");
     }
 
     return result;

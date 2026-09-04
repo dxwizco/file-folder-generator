@@ -3,7 +3,7 @@
 import type { FileSystem } from "../ports/FileSystem";
 
 /**
- * Validates a FileForge target directory.
+ * Validates a File & Folder Generator target directory.
  *
  * This class is filesystem-aware but platform-independent.
  * It relies only on the FileSystem port.

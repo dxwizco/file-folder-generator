@@ -2,8 +2,8 @@
 
 import type { FileSystem } from "../ports/FileSystem";
 import type { TemplateProvider } from "../ports/TemplateProvider";
-import type { ForgeNode } from "../models/ForgeNode";
-import type { ForgeExecutionStats } from "../models/ForgeStatistics";
+import type { DXWIZNode } from "../models/DXWIZNode";
+import type { DXWIZExecutionStats } from "../models/DXWIZStatistics";
 
 /**
  * Executes the actions planned by Planner.
@@ -13,7 +13,7 @@ import type { ForgeExecutionStats } from "../models/ForgeStatistics";
  * It does not:
  * - parse Markdown
  * - validate the target
- * - validate the Forge tree
+ * - validate the DXWIZ tree
  * - decide what action should happen
  *
  * Those responsibilities belong to the other core components.
@@ -25,13 +25,13 @@ export class Executor {
   ) {}
 
   /**
-   * Execute all planned ForgeNode actions.
+   * Execute all planned DXWIZNode actions.
    */
   public async execute(
-    nodes: ForgeNode[],
+    nodes: DXWIZNode[],
     force: boolean = false,
-  ): Promise<ForgeExecutionStats> {
-    const statistics: ForgeExecutionStats = {
+  ): Promise<DXWIZExecutionStats> {
+    const statistics: DXWIZExecutionStats = {
       folders: 0,
       created: 0,
       updated: 0,
@@ -54,8 +54,8 @@ export class Executor {
    * Create a directory when it does not already exist.
    */
   private async executeFolder(
-    node: ForgeNode,
-    statistics: ForgeExecutionStats,
+    node: DXWIZNode,
+    statistics: DXWIZExecutionStats,
   ): Promise<void> {
     const exists = await this.fileSystem.exists(node.fullPath);
 
@@ -69,9 +69,9 @@ export class Executor {
    * Execute a file action.
    */
   private async executeFile(
-    node: ForgeNode,
+    node: DXWIZNode,
     force: boolean,
-    statistics: ForgeExecutionStats,
+    statistics: DXWIZExecutionStats,
   ): Promise<void> {
     const parentDirectory = this.getParentDirectory(node.fullPath);
 

@@ -2,85 +2,97 @@
 
 ## Supported Versions
 
-FileForge is currently under active development.
+Security fixes are generally provided for the latest released version of File & Folder Generator.
 
-Security fixes will generally be applied to the latest available version.
+| Version        | Supported |
+| -------------- | --------- |
+| Latest release | Yes       |
+| Older releases | No        |
 
-| Version                         | Supported      |
-| ------------------------------- | -------------- |
-| Latest release                  | ✅             |
-| Older releases                  | ⚠️ Best effort |
-| Unreleased development versions | ⚠️ Best effort |
-
----
-
-# Reporting a Security Issue
-
-If you discover a potential security vulnerability in FileForge, please report it responsibly.
-
-Please do **not** create a public GitHub issue for security-related problems.
-
-Instead, contact the project maintainers privately through the available GitHub contact options.
+Users should update to the latest version before reporting a security issue whenever possible.
 
 ---
 
-# What to Include
+## Reporting a Security Issue
 
-When reporting a security issue, please provide:
+If you discover a potential security vulnerability in File & Folder Generator, please report it privately rather than opening a public GitHub issue.
 
-- A description of the vulnerability
-- Steps to reproduce the issue
-- Affected version or commit
-- Expected behavior
-- Actual behavior
-- Any possible impact
-- Suggested mitigation, if available
+Use the private contact method provided by the project maintainers.
 
-Example:
+When reporting a security issue, please include:
+
+- A description of the vulnerability.
+- Steps to reproduce the issue.
+- A minimal example or proof of concept, when applicable.
+- The affected File & Folder Generator version.
+- Your VS Code version and operating system, when relevant.
+- The expected behavior.
+- The actual behavior.
+- The potential security impact.
+- A suggested mitigation, if available.
+
+Please do not include passwords, access tokens, private documents, personal information, or other unnecessary sensitive data in your report.
+
+### Example Report
 
 ```text
-FileForge Version:
-1.0.0
+File & Folder Generator Version: 0.1.0
 
-Issue:
-Unexpected file creation outside the target directory.
+Issue: Unexpected file creation outside the target directory.
 
 Steps:
-1. Create definition file.
-2. Provide crafted path.
-3. Run FileForge.
+1. Create a Markdown definition.
+2. Provide a crafted target or file path.
+3. Run File & Folder Generator.
 
 Impact:
-Potential unintended file modification.
+Potential unintended file modification outside the intended target location.
+
+Environment:
+VS Code: <version>
+Operating System: <OS>
 ```
 
 ---
 
-# Response Process
+## What to Expect
 
-After receiving a report, maintainers will:
+Security reports will be reviewed as soon as reasonably possible.
 
-1. Review the reported issue.
-2. Confirm whether it is a security concern.
-3. Investigate possible fixes.
-4. Provide updates when appropriate.
-5. Release a fix if required.
+If a vulnerability is confirmed, the maintainers will assess its severity and work toward an appropriate fix.
+
+Depending on the nature of the issue, details about the vulnerability and its resolution may be documented in the project's changelog or release notes after the issue has been addressed.
 
 ---
 
-# Security Considerations
+## Scope
 
-FileForge creates folders and files based on user-provided definitions.
+File & Folder Generator is a local VS Code extension that creates folders and files based on Markdown project definitions.
 
-Users should:
+Its core functionality includes:
 
-- Review definition files before running them.
-- Use trusted project definitions.
-- Run FileForge with appropriate permissions.
-- Avoid running unknown scripts or templates.
+- Reading Markdown definitions containing `dxwiz` project definition blocks.
+- Parsing and validating project structures.
+- Validating target paths.
+- Planning file and folder operations.
+- Creating folders and files in the specified target location.
+- Optionally replacing existing files when the Generate and Overwrite command is used.
+- Generating execution reports.
+
+The extension does not require external services for its core file-generation functionality.
+
+Security reports should focus on vulnerabilities that could cause unintended file access, file creation, file modification, path traversal, execution of unintended operations, exposure of sensitive information, or other security-impacting behavior.
 
 ---
 
-# Thank You
+## Responsible Disclosure
 
-Responsible security reporting helps keep FileForge safe and reliable for everyone.
+Please allow the maintainers reasonable time to investigate and address a reported security issue before publicly disclosing technical details.
+
+We appreciate responsible disclosure and will make reasonable efforts to handle security reports appropriately.
+
+---
+
+## Thank You
+
+Responsible security reporting helps keep File & Folder Generator safe and reliable for everyone.

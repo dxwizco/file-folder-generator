@@ -1,15 +1,15 @@
 // src/ core/engine/Validator.ts
 
-import type { ForgeNode } from "../models/ForgeNode";
-import type { ForgeValidation } from "../models/ForgeValidation";
+import type { DXWIZNode } from "../models/DXWIZNode";
+import type { DXWIZValidation } from "../models/DXWIZValidation";
 
 /**
-Validates the parsed FileForge tree.
+Validates the parsed File & Folder Generator tree.
 The validator does not access the filesystem.
-It only validates the ForgeNode[] structure.
+It only validates the DXWIZNode[] structure.
 */
 export class Validator {
-  public validate(nodes: ForgeNode[]): ForgeValidation {
+  public validate(nodes: DXWIZNode[]): DXWIZValidation {
     const errors: string[] = [];
     const warnings: string[] = [];
 

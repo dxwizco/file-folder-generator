@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { Planner } from "../src/core/engine/Planner";
 import type { FileSystem } from "../src/core/ports/FileSystem";
-import type { ForgeNode } from "../src/core/models/ForgeNode";
+import type { DXWIZNode } from "../src/core/models/DXWIZNode";
 
 function createFileSystem(overrides: Partial<FileSystem> = {}): FileSystem {
   return {
@@ -18,7 +18,7 @@ function createFileSystem(overrides: Partial<FileSystem> = {}): FileSystem {
   };
 }
 
-function createFileNode(overrides: Partial<ForgeNode> = {}): ForgeNode {
+function createFileNode(overrides: Partial<DXWIZNode> = {}): DXWIZNode {
   return {
     name: "app.ts",
     relativePath: "src/app.ts",
@@ -30,7 +30,7 @@ function createFileNode(overrides: Partial<ForgeNode> = {}): ForgeNode {
   };
 }
 
-function createFolderNode(overrides: Partial<ForgeNode> = {}): ForgeNode {
+function createFolderNode(overrides: Partial<DXWIZNode> = {}): DXWIZNode {
   return {
     name: "src",
     relativePath: "src",
@@ -106,7 +106,7 @@ describe("Planner", () => {
       }),
     );
 
-    const nodes: ForgeNode[] = [
+    const nodes: DXWIZNode[] = [
       createFolderNode(),
       createFileNode({
         name: "new.ts",
@@ -136,7 +136,7 @@ describe("Planner", () => {
       }),
     );
 
-    const nodes: ForgeNode[] = [
+    const nodes: DXWIZNode[] = [
       createFileNode({
         name: "one.ts",
         relativePath: "one.ts",

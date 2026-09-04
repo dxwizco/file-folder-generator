@@ -3,9 +3,9 @@
 import { describe, expect, it } from "vitest";
 
 import { Validator } from "../src/core/engine/Validator";
-import type { ForgeNode } from "../src/core/models/ForgeNode";
+import type { DXWIZNode } from "../src/core/models/DXWIZNode";
 
-function createNode(overrides: Partial<ForgeNode> = {}): ForgeNode {
+function createNode(overrides: Partial<DXWIZNode> = {}): DXWIZNode {
   return {
     name: "app.ts",
     relativePath: "src/app.ts",

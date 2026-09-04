@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { Executor } from "../src/core/engine/Executor";
 import type { FileSystem } from "../src/core/ports/FileSystem";
 import type { TemplateProvider } from "../src/core/ports/TemplateProvider";
-import type { ForgeNode } from "../src/core/models/ForgeNode";
+import type { DXWIZNode } from "../src/core/models/DXWIZNode";
 
 function createFileSystem(overrides: Partial<FileSystem> = {}): FileSystem {
   return {
@@ -28,7 +28,7 @@ function createTemplateProvider(
   };
 }
 
-function createFileNode(overrides: Partial<ForgeNode> = {}): ForgeNode {
+function createFileNode(overrides: Partial<DXWIZNode> = {}): DXWIZNode {
   return {
     name: "app.ts",
     relativePath: "src/app.ts",
@@ -40,7 +40,7 @@ function createFileNode(overrides: Partial<ForgeNode> = {}): ForgeNode {
   };
 }
 
-function createFolderNode(overrides: Partial<ForgeNode> = {}): ForgeNode {
+function createFolderNode(overrides: Partial<DXWIZNode> = {}): DXWIZNode {
   return {
     name: "src",
     relativePath: "src",
@@ -246,7 +246,7 @@ describe("Executor", () => {
       exists: async (path: string) => existingPaths.has(path),
     });
 
-    const nodes: ForgeNode[] = [
+    const nodes: DXWIZNode[] = [
       createFolderNode(),
       createFileNode({
         name: "created.ts",
@@ -292,7 +292,7 @@ describe("Executor", () => {
       exists: async (path: string) => existingPaths.has(path),
     });
 
-    const nodes: ForgeNode[] = [
+    const nodes: DXWIZNode[] = [
       createFolderNode(),
       createFileNode({
         name: "new.ts",

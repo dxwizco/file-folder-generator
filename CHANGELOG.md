@@ -1,193 +1,69 @@
 # Changelog
 
-All notable changes to FileForge will be documented in this file.
+All notable changes to File & Folder Generator will be documented in this file.
 
-The format is based on:
-
-- [Keep a Changelog](https://keepachangelog.com/)
-- Semantic Versioning
+This project follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-# [Unreleased]
+## [Unreleased]
 
-## Planned
-
-- Custom template variables
-- Additional template engines
-- More built-in project profiles
-- Interactive project creation wizard
+Changes for the next release will be listed here.
 
 ---
 
-# [2.0.0] - 2026-08-15
+## [0.1.0] - 2026-09-04
 
-## Added
+### Added
 
-### Markdown Definitions
+- Initial release of File & Folder Generator as a VS Code extension.
+- Markdown-based project definitions using `dxwiz` fenced code blocks.
+- Support for specifying a target directory with `target`.
+- Indentation-based project structures.
+- Single-line file and folder paths.
+- Multiple root-level folders and files.
+- Support for special folder names such as `[id]` and `(group)`.
+- Full-line and inline comments in definitions.
+- Processing of the first `dxwiz` block in a Markdown definition.
+- Duplicate physical path detection.
+- Validation of project definitions and target paths.
+- Preview command for inspecting planned changes without modifying the target.
+- Generate command for creating project structures while protecting existing files.
+- Generate and Overwrite command for replacing existing files.
+- Execution reports with validation status, planned actions, execution statistics, warnings, and generated file structures.
+- Report files generated beside the source definition using the `.output.md` suffix.
+- VS Code Output panel reporting.
+- Basic starter templates for supported file extensions and file names.
+- Generated file-path headers for supported file types.
+- Reusable Markdown project definitions.
 
-- Added Markdown-based FileForge definition files using `.md`.
-- Added support for fenced `fileforge` definition blocks.
-- Only the first `fileforge` block is processed.
-- Markdown files can contain normal documentation alongside the definition block.
-- Added support for comments inside definition blocks.
-- Added support for nested folder structures using indentation.
-- Added support for single-line folder/file paths.
-- Added support for special folder names such as `[dynamic-route]` and `(group)`.
-- Added support for duplicate path detection.
+### Supported Templates
 
-### Preview and Execution
-
-- Added preview mode as the default behavior.
-- Added `-Run` execution mode.
-- Added `-ShowActions` for detailed operation reporting.
-- Added `-Force` for replacing existing files.
-- Added detailed create/update/skip reporting.
-
-### Project Tree Rendering
-
-- Added explorer-style project tree output.
-- Added sorted folder and file rendering.
-- Added visual indicators for planned and executed actions.
-
-### Templates
-
-- Expanded extension-based template support.
-- Added templates for additional file types including:
-  - C#
-  - Go
-  - Rust
-  - Vue
-  - SCSS
-  - YAML
-  - YML
-  - ENV
-  - Shell
-  - Docker
-  - Docker Compose
-  - Git ignore files
-
-### Documentation
-
-- Updated README with complete Markdown definition documentation.
-- Added command usage examples for Windows, Linux, macOS and WSL.
-- Added examples for preview, execution, force and action-reporting modes.
-- Added documentation for running FileForge from any location.
-- Added `test.md` as a simple example definition.
-
-## Changed
-
-- Definition files changed from `.txt` to `.md`.
-- FileForge now reads project definitions from Markdown files.
-- Updated command documentation and examples.
-- Improved output rendering and execution summaries.
-
-## Fixed
-
-- Fixed dynamic route handling.
-- Fixed nested folder rendering.
-- Fixed path handling for special folder names.
-- Improved duplicate path detection.
-
----
-
-# [1.0.0] - 2026-07-18
-
-## Added
-
-### Core Features
-
-- Initial release of FileForge.
-- Generate folders and files from reusable definition files.
-- Support multiple project structure profiles.
-- Automatically select templates based on file extensions.
-- Create starter files using reusable PowerShell templates.
-- Add automatic file path headers.
-
-### Safety Features
-
-- Skip existing files containing content.
-- Protect existing project files from accidental overwrite.
-- Ask for confirmation when no target directory is provided.
-
-### Reporting
-
-- Added generation summary:
-  - Total files
-  - Created files
-  - Skipped files
-  - Failed files
-
-### Included Profiles
-
-- React application structure
-- Node.js API structure
-- .NET API structure
-- Python service structure
-- Company standard structure
-
-### Included Templates
-
-- TypeScript
-- React TSX
-- JavaScript
+- C#
 - CSS
+- Environment files
+- Go
 - HTML
+- JavaScript
 - JSON
+- React JavaScript
+- Markdown
+- PowerShell
 - Python
+- Rust
+- SCSS
+- Shell
 - SQL
+- TypeScript
+- React TypeScript
+- Vue
+- YAML
+- Docker
+- Docker Compose
+- Git ignore files
 
 ---
 
-# Release Notes
+## Future Releases
 
-## Versioning Strategy
-
-FileForge follows:
-
-```text
-MAJOR.MINOR.PATCH
-```
-
-Example:
-
-```text
-1.2.3
-│ │ │
-│ │ └── Bug fixes
-│ └──── New features
-└────── Breaking changes
-```
-
----
-
-# How to Add Changes
-
-When adding a new change, place it under:
-
-```text
-[Unreleased]
-```
-
-before the next release.
-
-Example:
-
-```markdown
-## Added
-
-- Added Angular project profile.
-- Added YAML template support.
-```
-
-When releasing:
-
-1. Rename `[Unreleased]` to the version number.
-2. Add the release date.
-3. Create a new empty `[Unreleased]` section.
-
----
-
-# Future Releases
-
-Future versions will be documented here as FileForge evolves.
+New features, improvements, and fixes will be added to the appropriate release section as the project evolves.

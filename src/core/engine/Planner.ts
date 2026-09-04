@@ -1,10 +1,10 @@
 // src/ core/engine/Planner.ts
 
 import type { FileSystem } from "../ports/FileSystem";
-import type { ForgeAction, ForgeNode } from "../models/ForgeNode";
+import type { DXWIZAction, DXWIZNode } from "../models/DXWIZNode";
 
 /**
-Determines what action should be performed for each ForgeNode.
+Determines what action should be performed for each DXWIZNode.
 The Planner does not create or modify anything.
 It only decides what should happen.
 */
@@ -20,9 +20,9 @@ Files receive:
     "skip" when they exist and force is disabled
 */
   public async plan(
-    nodes: ForgeNode[],
+    nodes: DXWIZNode[],
     force: boolean = false,
-  ): Promise<ForgeNode[]> {
+  ): Promise<DXWIZNode[]> {
     for (const node of nodes) {
       node.action = await this.getAction(node, force);
     }
@@ -34,9 +34,9 @@ Files receive:
     Determine the action for one node.
     */
   private async getAction(
-    node: ForgeNode,
+    node: DXWIZNode,
     force: boolean,
-  ): Promise<ForgeAction> {
+  ): Promise<DXWIZAction> {
     /*
     Folders don't need create/update/skip
     planning in the same way files do.

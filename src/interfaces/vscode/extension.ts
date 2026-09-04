@@ -5,24 +5,24 @@ import * as vscode from "vscode";
 
 import { NodeFileSystem } from "../../adapters/filesystem/NodeFileSystem";
 import { DefaultTemplateProvider } from "../../adapters/templates/DefaultTemplateProvider";
-import { ForgeEngine } from "../../core/engine/ForgeEngine";
+import { DXWIZEngine } from "../../core/engine/DXWIZEngine";
 import {
   ReportRenderer,
-  type ForgeRunMode,
+  type DXWIZRunMode,
 } from "../../core/reporting/ReportRenderer";
 import { VscodeOutputRenderer } from "./VscodeOutputRenderer";
 
 /**
- * FileForge VS Code extension entry point.
+ * File & Folder Generator VS Code extension entry point.
  *
  * This file connects VS Code with the platform-independent
- * FileForge core engine.
+ * File & Folder Generator core engine.
  */
 export function activate(context: vscode.ExtensionContext): void {
   const fileSystem = new NodeFileSystem();
   const templateProvider = new DefaultTemplateProvider();
 
-  const engine = new ForgeEngine(fileSystem, templateProvider);
+  const engine = new DXWIZEngine(fileSystem, templateProvider);
   const outputRenderer = new VscodeOutputRenderer();
   const reportRenderer = new ReportRenderer();
 
@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     if (!editor) {
       vscode.window.showErrorMessage(
-        "FileForge: No active editor found. Please open a FileForge Markdown definition.",
+        "File & Folder Generator: No active editor found. Please open a DXWIZ Markdown definition.",
       );
 
       return undefined;
@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     if (editor.document.languageId !== "markdown") {
       vscode.window.showErrorMessage(
-        "FileForge: Please run this command from a Markdown file.",
+        "File & Folder Generator: Please run this command from a Markdown file.",
       );
 
       return undefined;
@@ -54,6 +54,9 @@ export function activate(context: vscode.ExtensionContext): void {
   /**
    * Write the complete report to <definition>.output.md
    * and open it beside the definition document.
+   *
+   * The report is formatted specifically for Markdown so
+   * the FILE STRUCTURE tree keeps its exact visual layout.
    */
   async function writeReport(
     document: vscode.TextDocument,
@@ -61,15 +64,30 @@ export function activate(context: vscode.ExtensionContext): void {
   ): Promise<void> {
     const outputPath = path.join(
       path.dirname(document.uri.fsPath),
-      `${path.basename(document.uri.fsPath, path.extname(document.uri.fsPath))}.output.md`,
+      `${path.basename(
+        document.uri.fsPath,
+        path.extname(document.uri.fsPath),
+      )}.output.md`,
     );
 
     const outputUri = vscode.Uri.file(outputPath);
 
     /*
+     * Format the rendered report for Markdown.
+     *
+     * Only the FILE STRUCTURE tree is wrapped in a
+     * fenced code block. The rest of the report remains
+     * normal Markdown/text.
+     */
+    const markdownReport = formatReportForMarkdown(report);
+
+    /*
      * Always overwrite the previous report.
      */
-    await vscode.workspace.fs.writeFile(outputUri, Buffer.from(report, "utf8"));
+    await vscode.workspace.fs.writeFile(
+      outputUri,
+      Buffer.from(markdownReport, "utf8"),
+    );
 
     /*
      * Open the report beside the definition file.
@@ -84,10 +102,55 @@ export function activate(context: vscode.ExtensionContext): void {
   }
 
   /**
-   * Run a FileForge command.
+   * Convert the rendered report into Markdown suitable
+   * for the .output.md file.
+   *
+   * Only the FILE STRUCTURE section's tree is placed
+   * inside a fenced code block.
+   *
+   * This preserves tree characters such as:
+   *
+   * ├──
+   * └──
+   * │
+   *
+   * without Markdown changing their appearance.
    */
-  async function runFileForge(
-    mode: ForgeRunMode,
+  function formatReportForMarkdown(report: string): string {
+    const marker = "FILE STRUCTURE\n--------------------------";
+
+    const structureIndex = report.indexOf(marker);
+
+    /*
+     * If the marker is not found, return the report
+     * unchanged rather than modifying the report unexpectedly.
+     */
+    if (structureIndex === -1) {
+      return report;
+    }
+
+    const beforeStructure = report.slice(0, structureIndex);
+
+    const structure = report.slice(structureIndex + marker.length);
+
+    return [
+      beforeStructure.trimEnd(),
+      "",
+      marker,
+      "",
+      "```text",
+      structure.trim(),
+      "```",
+      "",
+    ].join("\n");
+  }
+
+  /**
+   * Run a File & Folder Generator command.
+   */
+
+  async function runFileFolderGenerator(
+    mode: DXWIZRunMode,
     execute: boolean,
     force: boolean,
   ): Promise<void> {
@@ -106,7 +169,10 @@ export function activate(context: vscode.ExtensionContext): void {
       });
 
       /*
-       * Keep the existing concise VS Code Output panel.
+       * Keep the VS Code Output panel concise.
+       *
+       * The complete report, including the full file tree,
+       * is written to the .output.md file below.
        */
       if (execute) {
         outputRenderer.showExecution(result);
@@ -123,12 +189,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
       /*
        * Validation errors are reported in the output file.
-       * Keep the VS Code notification concise and point the user
-       * to the detailed report.
+       * Keep the VS Code notification concise and point the
+       * user to the detailed report.
        */
       if (!result.validation.valid) {
         vscode.window.showErrorMessage(
-          "FileForge: Validation failed. Please check the FileForge output report.",
+          "File & Folder Generator: Validation failed. Please check the output report.",
         );
         return;
       }
@@ -138,11 +204,11 @@ export function activate(context: vscode.ExtensionContext): void {
        */
       if (execute && result.execution) {
         vscode.window.showInformationMessage(
-          `FileForge: Generation complete. Created ${result.execution.created} file(s), updated ${result.execution.updated}, and skipped ${result.execution.skipped}.`,
+          `File & Folder Generator: Generation complete. Created ${result.execution.created} file(s), updated ${result.execution.updated}, and skipped ${result.execution.skipped}.`,
         );
       } else {
         vscode.window.showInformationMessage(
-          "FileForge: Preview complete. No filesystem changes were made.",
+          "File & Folder Generator: Preview complete. No filesystem changes were made.",
         );
       }
     } catch (error) {
@@ -150,46 +216,44 @@ export function activate(context: vscode.ExtensionContext): void {
 
       /*
        * Keep errors concise in the notification.
-       * The detailed error is also written to the report when
-       * the engine returns a validation result.
        */
       vscode.window.showErrorMessage(
-        `FileForge: ${message}. Please check the FileForge output report.`,
+        `File & Folder Generator: ${message}. Please check the output report.`,
       );
     }
   }
 
   /*
    * ============================================================
-   * FileForge: Preview
+   * File & Folder Generator: Preview
    * ============================================================
    */
   const previewCommand = vscode.commands.registerCommand(
-    "fileforge.preview",
+    "dxwiz.preview",
     async () => {
-      await runFileForge("PREVIEW", false, false);
+      await runFileFolderGenerator("PREVIEW", false, false);
     },
   );
 
   /*
    * ============================================================
-   * FileForge: Generate
+   * File & Folder Generator: Generate
    * ============================================================
    */
   const generateCommand = vscode.commands.registerCommand(
-    "fileforge.generate",
+    "dxwiz.generate",
     async () => {
-      await runFileForge("GENERATE", true, false);
+      await runFileFolderGenerator("GENERATE", true, false);
     },
   );
 
   /*
    * ============================================================
-   * FileForge: Generate and Overwrite
+   * File & Folder Generator: Generate and Overwrite
    * ============================================================
    */
   const generateAndOverwriteCommand = vscode.commands.registerCommand(
-    "fileforge.generateAndOverwrite",
+    "dxwiz.generateAndOverwrite",
     async () => {
       const document = getActiveMarkdownDocument();
 
@@ -198,7 +262,8 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       const confirmation = await vscode.window.showWarningMessage(
-        "FileForge: Generate and Overwrite will overwrite all existing files that are part of this definition. Existing file contents may be replaced by templates. Do you want to continue?",
+        "File & Folder Generator: Generate and Overwrite will overwrite all existing files that are part of this definition. Existing file contents may be replaced by templates. Do you want to continue?",
+
         {
           modal: true,
         },
@@ -221,34 +286,52 @@ export function activate(context: vscode.ExtensionContext): void {
           force: true,
         });
 
+        /*
+         * Keep the VS Code Output panel concise.
+         *
+         * The complete report, including the full file tree,
+         * is written to the .output.md file below.
+         */
         outputRenderer.showExecution(result);
 
+        /*
+         * Render the complete report for the .output.md file.
+         */
         const report = reportRenderer.render(result, "GENERATE_AND_OVERWRITE");
 
         await writeReport(document, report);
 
+        /*
+         * Validation errors are reported in the output file.
+         */
         if (!result.validation.valid) {
           vscode.window.showErrorMessage(
-            "FileForge: Validation failed. Please check the FileForge output report.",
+            "File & Folder Generator: Validation failed. Please check the output report.",
           );
           return;
         }
 
+        /*
+         * Successful execution summary.
+         */
         if (result.execution) {
           vscode.window.showInformationMessage(
-            `FileForge: Generation complete. Created ${result.execution.created} file(s), updated ${result.execution.updated}, and skipped ${result.execution.skipped}.`,
+            `File & Folder Generator: Generation complete. Created ${result.execution.created} file(s), updated ${result.execution.updated}, and skipped ${result.execution.skipped}.`,
           );
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
 
         vscode.window.showErrorMessage(
-          `FileForge: ${message}. Please check the FileForge output report.`,
+          `File & Folder Generator: ${message}. Please check the output report.`,
         );
       }
     },
   );
 
+  /*
+   * Register all File & Folder Generator commands.
+   */
   context.subscriptions.push(
     previewCommand,
     generateCommand,
@@ -272,139 +355,3 @@ export function activate(context: vscode.ExtensionContext): void {
 export function deactivate(): void {
   // No additional cleanup is currently required.
 }
-
-// // ===  src/interfaces/vscode/extension.ts
-
-// import * as vscode from "vscode";
-
-// import { NodeFileSystem } from "../../adapters/filesystem/NodeFileSystem";
-// import { DefaultTemplateProvider } from "../../adapters/templates/DefaultTemplateProvider";
-// import { ForgeEngine } from "../../core/engine/ForgeEngine";
-// import { VscodeOutputRenderer } from "./VscodeOutputRenderer";
-
-// /**
-//  * FileForge VS Code extension entry point.
-//  *
-//  * This file connects VS Code with the platform-independent
-//  * FileForge core engine.
-//  */
-// export function activate(context: vscode.ExtensionContext): void {
-//   const fileSystem = new NodeFileSystem();
-//   const templateProvider = new DefaultTemplateProvider();
-
-//   const engine = new ForgeEngine(fileSystem, templateProvider);
-//   const outputRenderer = new VscodeOutputRenderer();
-
-//   const generateCommand = vscode.commands.registerCommand(
-//     "fileforge.generate",
-//     async () => {
-//       try {
-//         const editor = vscode.window.activeTextEditor;
-
-//         if (!editor) {
-//           vscode.window.showErrorMessage("FileForge: No active editor found.");
-//           return;
-//         }
-
-//         const document = editor.document;
-
-//         if (document.languageId !== "markdown") {
-//           vscode.window.showErrorMessage(
-//             "FileForge: Please run this command from a Markdown file.",
-//           );
-//           return;
-//         }
-
-//         const content = document.getText();
-
-//         /*
-//          * First perform a preview.
-//          *
-//          * Preview parses and validates the definition
-//          * without modifying the filesystem.
-//          */
-//         const previewResult = await engine.run(content, {
-//           execute: false,
-//           force: false,
-//         });
-
-//         outputRenderer.showPreview(previewResult);
-
-//         /*
-//          * Stop when validation fails.
-//          */
-//         if (!previewResult.validation.valid) {
-//           vscode.window.showErrorMessage(
-//             "FileForge: Validation failed. Please check the FileForge Preview output.",
-//           );
-//           return;
-//         }
-
-//         /*
-//          * Ask the user whether to generate the structure.
-//          */
-//         const generateAction = await vscode.window.showInformationMessage(
-//           "FileForge: Project structure is ready to generate.",
-//           "Generate",
-//           "Cancel",
-//         );
-
-//         if (generateAction !== "Generate") {
-//           return;
-//         }
-
-//         /*
-//          * Ask whether existing files should be overwritten.
-//          */
-//         const overwriteAction = await vscode.window.showWarningMessage(
-//           "FileForge: Should existing files be overwritten?",
-//           "Overwrite",
-//           "Keep Existing",
-//         );
-
-//         if (!overwriteAction) {
-//           return;
-//         }
-
-//         const force = overwriteAction === "Overwrite";
-
-//         /*
-//          * Execute the validated FileForge definition.
-//          */
-//         const executionResult = await engine.run(content, {
-//           execute: true,
-//           force,
-//         });
-
-//         outputRenderer.showExecution(executionResult);
-
-//         vscode.window.showInformationMessage(
-//           `FileForge: Generation complete. Created ${executionResult.execution?.created ?? 0} file(s), updated ${executionResult.execution?.updated ?? 0}, and skipped ${executionResult.execution?.skipped ?? 0}.`,
-//         );
-//       } catch (error) {
-//         const message = error instanceof Error ? error.message : String(error);
-
-//         vscode.window.showErrorMessage(`FileForge: ${message}`);
-//       }
-//     },
-//   );
-
-//   context.subscriptions.push(generateCommand);
-
-//   /*
-//    * Dispose the output renderer when the extension
-//    * is deactivated.
-//    */
-//   context.subscriptions.push({
-//     dispose: () => {
-//       outputRenderer.dispose();
-//     },
-//   });
-// }
-
-// /**
-//  * Called when the extension is deactivated.
-//  */
-// export function deactivate(): void {
-//   // No additional cleanup is currently required.
-// }

@@ -229,7 +229,7 @@ describe("TreeParser", () => {
     expect(nodes[2].fullPath).toBe(`${target}/src/components/Button.tsx`);
   });
 
-  it("does not include the target itself as a ForgeNode", () => {
+  it("does not include the target itself as a DXWIZNode", () => {
     const nodes = parser.parse(["src/", "    app.ts"], target);
 
     expect(nodes.some((node) => node.fullPath === target)).toBe(false);

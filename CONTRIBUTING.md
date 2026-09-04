@@ -1,248 +1,142 @@
-# Contributing to FileForge
+# Contributing to File & Folder Generator
 
-Thank you for your interest in improving FileForge.
+Thank you for your interest in contributing to File & Folder Generator.
 
-FileForge is built to help developers create consistent project structures quickly and safely. Contributions such as bug fixes, new templates, documentation improvements, and feature ideas are welcome.
+Contributions are welcome, including bug fixes, feature improvements, documentation updates, templates, tests, and other improvements.
 
----
+## Ways to Contribute
 
-# Ways to Contribute
+You can contribute by:
 
-There are several ways you can help:
+- Reporting bugs.
+- Suggesting features or improvements.
+- Improving documentation.
+- Adding or improving templates.
+- Improving parsing, validation, generation, or reporting.
+- Adding or improving tests.
+- Submitting pull requests.
 
-- Report bugs
-- Suggest new features
-- Improve documentation
-- Add new project definitions
-- Add new templates
-- Improve existing scripts
-- Submit pull requests
+## Before You Start
 
----
+Before making a change:
 
-# Before You Start
-
-Before making changes:
-
-1. Check existing issues to avoid duplicate work.
-2. Create an issue for major changes or new features.
+1. Check existing GitHub issues to avoid duplicate work.
+2. For significant changes or new features, open an issue first to discuss the proposed approach.
 3. Keep changes focused and easy to review.
-4. Update documentation when behavior changes.
+4. Update relevant documentation when behavior changes.
+5. Add or update tests when appropriate.
 
----
+## Development
 
-# Repository Structure
+File & Folder Generator is a TypeScript-based VS Code extension.
 
-The main project structure:
+Install dependencies:
 
-```text
-FileForge
-│
-├── files
-│   └── Project structure definitions
-│
-├── templates
-│   └── File creation templates
-│
-├── FileForge.ps1
-│   └── Main generation engine
-│
-├── Templates.ps1
-│   └── Template management
-│
-└── Documentation files
+```bash
+pnpm install
 ```
 
----
+Compile the project:
 
-# Adding a New File Definition
-
-File definitions are stored inside:
-
-```text
-files/
+```bash
+pnpm run compile
 ```
 
-Example:
+Run the test suite:
 
-```text
-files/vue-app.txt
+```bash
+pnpm test
 ```
 
-A definition should contain one path per line:
+For continuous compilation during development:
 
-```text
-src/components/App.vue
-src/assets/style.css
-package.json
-README.md
+```bash
+pnpm run watch
 ```
 
-Guidelines:
+## Project Structure
 
-- Use clear profile names.
-- Keep structures realistic.
-- Avoid unnecessary files.
-- Add comments when needed.
-
-Example:
+The project is organized into core functionality, adapters, VS Code interfaces, templates, and tests.
 
 ```text
-# Vue application structure
+src/
+├── adapters/
+├── core/
+└── interfaces/
 
-src/App.vue
-src/main.js
+tests/
 ```
 
----
+See the existing source code and tests for the current architecture and implementation patterns.
 
-# Adding a New Template
-
-Templates are stored inside:
-
-```text
-templates/
-```
-
-Example:
-
-```text
-templates/vue.ps1
-```
-
-When adding a template:
-
-- Follow existing naming conventions.
-- Keep generated output clean.
-- Include appropriate headers if required.
-- Test with a sample project.
-
----
-
-# Reporting Bugs
-
-When reporting a bug, include:
-
-- Operating system
-- PowerShell version
-- FileForge version or commit
-- Steps to reproduce
-- Expected behavior
-- Actual behavior
-- Error messages or logs
-
-Example:
-
-```text
-PowerShell:
-7.4.x
-
-OS:
-Windows 11
-
-Issue:
-Template is not selected for .xyz files.
-```
-
----
-
-# Suggesting Features
-
-Feature requests should explain:
-
-- What problem the feature solves
-- Why it would be useful
-- Possible implementation approach
-- Example usage
-
-Good example:
-
-> Add support for custom variables inside templates so project names can automatically replace placeholders.
-
----
-
-# Development Guidelines
-
-## PowerShell Style
-
-Please follow these practices:
-
-- Use clear variable names.
-- Keep functions focused.
-- Add comments for complex logic.
-- Avoid unnecessary complexity.
-- Maintain compatibility with PowerShell 7+.
-
----
-
-## Testing Changes
+## Testing
 
 Before submitting a pull request:
 
-1. Test existing profiles.
-2. Test new functionality.
-3. Confirm existing files are not overwritten.
-4. Verify summary output is correct.
+- Run the existing test suite.
+- Test any new or changed functionality.
+- Add tests for new behavior where appropriate.
+- Verify that existing behavior has not been unintentionally affected.
 
-Example:
+## Pull Requests
 
-```powershell
-.\FileForge.ps1 `
--File react-app `
--Target "./TestProject"
-```
+When submitting a pull request:
 
----
+- Keep the changes focused.
+- Clearly describe what was changed and why.
+- Include relevant testing information.
+- Update documentation when necessary.
+- Avoid unrelated changes in the same pull request.
 
-# Pull Request Guidelines
-
-Before submitting:
-
-- Keep commits focused.
-- Explain what changed.
-- Include testing details.
-- Update documentation if needed.
-
-A good pull request description includes:
+A useful pull request description should explain:
 
 ```text
 ## Changes
 
-Added Vue project definition.
+Describe what was changed.
 
 ## Testing
 
-Generated sample Vue structure successfully.
+Describe the tests that were run.
 
 ## Notes
 
-No existing behavior changed.
+Include any relevant implementation details or limitations.
 ```
 
----
+## Bug Reports
 
-# Code Review
+When reporting a bug, include enough information to reproduce it.
 
-All contributions are reviewed before merging.
+Where applicable, provide:
 
-Review focuses on:
+- File & Folder Generator version.
+- VS Code version.
+- Operating system.
+- A minimal Markdown definition that reproduces the problem.
+- Expected behavior.
+- Actual behavior.
+- Relevant error messages or output.
 
-- Correctness
-- Simplicity
-- Maintainability
-- Documentation quality
-- Compatibility
+Please do not include passwords, access tokens, private documents, or other sensitive information.
 
----
+## Feature Requests
 
-# Contribution License
+Feature requests are welcome.
 
-By submitting a contribution to FileForge, you agree that your contribution may be distributed under the same MIT License as the project.
+Please describe:
 
----
+- The problem you want to solve.
+- Why the current behavior is insufficient.
+- The proposed behavior.
+- Examples or use cases.
 
-# Thank You
+## Code of Conduct
 
-Every improvement helps make FileForge more useful for developers.
+Please read and follow the project's [Code of Conduct](CODE_OF_CONDUCT.md).
 
-Whether you fix a typo, add a template, or improve the engine, your contribution is appreciated.
+## License
+
+By contributing to File & Folder Generator, you agree that your contributions may be distributed under the project's [MIT License](LICENSE).
+
+Thank you for helping improve File & Folder Generator.

@@ -1,4 +1,4 @@
-// tests/FileForge.integration.test.ts
+// tests/integration.test.ts
 
 import { describe, expect, it, beforeEach, afterEach } from "vitest";
 
@@ -6,21 +6,21 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { ForgeEngine } from "../src/core/engine/ForgeEngine";
+import { DXWIZEngine } from "../src/core/engine/DXWIZEngine";
 import { NodeFileSystem } from "../src/adapters/filesystem/NodeFileSystem";
 import { DefaultTemplateProvider } from "../src/adapters/templates/DefaultTemplateProvider";
 
-describe("FileForge integration", () => {
+describe("DXWIZ integration", () => {
   let targetDirectory: string;
-  let engine: ForgeEngine;
+  let engine: DXWIZEngine;
 
   beforeEach(async () => {
-    targetDirectory = await mkdtemp(join(tmpdir(), "fileforge-test-"));
+    targetDirectory = await mkdtemp(join(tmpdir(), "dxwiz-test-"));
 
     const fileSystem = new NodeFileSystem();
     const templateProvider = new DefaultTemplateProvider();
 
-    engine = new ForgeEngine(fileSystem, templateProvider);
+    engine = new DXWIZEngine(fileSystem, templateProvider);
   });
 
   afterEach(async () => {
@@ -32,7 +32,7 @@ describe("FileForge integration", () => {
 
   function definition(scaffold: string): string {
     return `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "${targetDirectory}"
 
 ${scaffold}

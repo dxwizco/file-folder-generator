@@ -8,7 +8,7 @@ import type { FileSystem } from "../../core/ports/FileSystem";
  * VS Code implementation of the FileSystem port.
  *
  * This adapter keeps VS Code-specific filesystem APIs
- * outside of the core FileForge engine.
+ * outside of the core File & Folder Generator engine.
  */
 export class VSCodeFileSystem implements FileSystem {
   /**

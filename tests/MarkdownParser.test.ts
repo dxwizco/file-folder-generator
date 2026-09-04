@@ -7,13 +7,13 @@ import { MarkdownParser } from "../src/core/engine/MarkdownParser";
 describe("MarkdownParser", () => {
   const parser = new MarkdownParser();
 
-  it("parses a valid FileForge block", () => {
+  it("parses a valid DXWIZ block", () => {
     const content = `
 # My Project
 
 Some documentation.
 
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "D:\\Projects\\MyProject"
 
 src/
@@ -31,7 +31,7 @@ README.md
 
   it("parses a single quoted target", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: 'D:\\Projects\\MyProject'
 
 src/
@@ -48,7 +48,7 @@ src/
 
   it("parses an unquoted target", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: D:\\Projects\\MyProject
 
 src/
@@ -65,7 +65,7 @@ src/
 
   it("accepts spaces around the target declaration", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
    target   :   "D:\\Projects\\MyProject"
 
 src/
@@ -82,7 +82,7 @@ src/
 
   it("recognizes TARGET case-insensitively", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 TARGET: "D:\\Projects\\MyProject"
 
 README.md
@@ -96,32 +96,32 @@ README.md
     expect(result.lines).toEqual(["", "README.md"]);
   });
 
-  it("rejects a missing FileForge block", () => {
+  it("rejects a missing DXWIZ block", () => {
     const content = `
 # My Project
 
-There is no FileForge definition here.
+There is no DXWIZ definition here.
 `;
 
     expect(() => parser.parse(content)).toThrow(
-      "No fileforge block found in the document.",
+      "No dxwiz block found in the document.",
     );
   });
 
-  it("rejects an empty FileForge block", () => {
+  it("rejects an empty DXWIZ block", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 \`\`\`
 `;
 
     expect(() => parser.parse(content)).toThrow(
-      "No fileforge block found in the document.",
+      "No dxwiz block found in the document.",
     );
   });
 
-  it("rejects a FileForge block without a target", () => {
+  it("rejects a DXWIZ block without a target", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 src/
     app.ts
 README.md
@@ -133,7 +133,7 @@ README.md
 
   it("rejects an empty target", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target:
 
 README.md
@@ -145,7 +145,7 @@ README.md
 
   it("rejects an empty double-quoted target", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: ""
 
 README.md
@@ -157,7 +157,7 @@ README.md
 
   it("rejects an empty single-quoted target", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: ''
 
 README.md
@@ -169,7 +169,7 @@ README.md
 
   it("trims whitespace inside surrounding quotes", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "  D:\\Projects\\MyProject  "
 
 README.md
@@ -183,7 +183,7 @@ README.md
 
   it("removes only the target line from scaffold lines", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 # Project definition
 
 target: "D:\\Projects\\MyProject"
@@ -214,7 +214,7 @@ README.md
 
   it("preserves comments for TreeParser to process later", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "D:\\Projects\\MyProject"
 
 # Root source folder
@@ -235,7 +235,7 @@ src/
 
   it("parses a Unix-style target path", () => {
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "/home/user/projects/myproject"
 
 src/
@@ -248,11 +248,11 @@ src/
     expect(result.target).toBe("/home/user/projects/myproject");
   });
 
-  it("uses the first FileForge block", () => {
+  it("uses the first DXWIZ block", () => {
     const content = `
 Some documentation.
 
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "D:\\Projects\\First"
 
 README.md
@@ -260,7 +260,7 @@ README.md
 
 Another block:
 
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "D:\\Projects\\Second"
 
 app.ts

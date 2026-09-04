@@ -1,10 +1,10 @@
-// src/ core/engine/ForgeEngine.ts
+// src/ core/engine/DXWIZEngine.ts
 
 import type { FileSystem } from "../ports/FileSystem";
 import type { TemplateProvider } from "../ports/TemplateProvider";
-import type { ForgeResult } from "../models/ForgeResult";
-import type { ForgePlanStats } from "../models/ForgeStatistics";
-import type { ForgeNode } from "../models/ForgeNode";
+import type { DXWIZResult } from "../models/DXWIZResult";
+import type { DXWIZPlanStats } from "../models/DXWIZStatistics";
+import type { DXWIZNode } from "../models/DXWIZNode";
 
 import { MarkdownParser } from "./MarkdownParser";
 import { TargetValidator } from "./TargetValidator";
@@ -14,9 +14,9 @@ import { Planner } from "./Planner";
 import { Executor } from "./Executor";
 
 /**
- * Main FileForge application engine.
+ * Main File & Folder Generator application engine.
  *
- * ForgeEngine coordinates the complete FileForge workflow:
+ * DXWIZEngine coordinates the complete File & Folder Generator workflow:
  *
  * Markdown
  *   ↓
@@ -24,7 +24,7 @@ import { Executor } from "./Executor";
  *   ↓
  * Validate target
  *   ↓
- * Build Forge tree
+ * Build DXWIZ tree
  *   ↓
  * Validate tree
  *   ↓
@@ -32,7 +32,7 @@ import { Executor } from "./Executor";
  *   ↓
  * Execute changes (optional)
  *   ↓
- * Return ForgeResult
+ * Return DXWIZResult
  *
  * The engine is platform-independent.
  *
@@ -44,7 +44,7 @@ import { Executor } from "./Executor";
  *
  * Those concerns are handled by adapters and interfaces.
  */
-export class ForgeEngine {
+export class DXWIZEngine {
   private readonly markdownParser: MarkdownParser;
   private readonly targetValidator: TargetValidator;
   private readonly treeParser: TreeParser;
@@ -67,7 +67,7 @@ export class ForgeEngine {
   }
 
   /**
-   * Run FileForge against a Markdown document.
+   * Run File & Folder Generator against a Markdown document.
    *
    * Default behavior is preview mode.
    *
@@ -81,7 +81,7 @@ export class ForgeEngine {
       execute?: boolean;
       force?: boolean;
     } = {},
-  ): Promise<ForgeResult> {
+  ): Promise<DXWIZResult> {
     const execute = options.execute ?? false;
     const force = options.force ?? false;
 
@@ -109,7 +109,7 @@ export class ForgeEngine {
 
     /*
      * ============================================================
-     * 3. Build Forge tree
+     * 3. Build DXWIZ tree
      * ============================================================
      */
 
@@ -208,9 +208,9 @@ export class ForgeEngine {
 
   /**
    * Calculate the number of folders and files
-   * represented by the Forge tree.
+   * represented by the DXWIZ tree.
    */
-  private createPlanStats(nodes: ForgeNode[]): ForgePlanStats {
+  private createPlanStats(nodes: DXWIZNode[]): DXWIZPlanStats {
     let folders = 0;
     let files = 0;
 

@@ -1,873 +1,279 @@
-# FileForge
+# File & Folder Generator
 
-> A lightweight, cross-platform PowerShell scaffolding engine that generates project structures, files, and starter templates from reusable Markdown definitions.
+> A lightweight VS Code project scaffolding tool that generates folders, files, and starter templates from reusable Markdown definitions.
 
-![PowerShell](https://img.shields.io/badge/PowerShell-7%2B-blue)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+Define your project structure once. Reuse it whenever you start a new project.
 
-FileForge helps developers create consistent project structures without manually creating folders, files, and starter templates every time.
-
-Define your project structure once, store it as a reusable Markdown definition, and generate it whenever you start a new project.
+[![VS Code](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)](https://code.visualstudio.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/DXWIZ.file-folder-generator?label=Visual%20Studio%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=DXWIZ.file-folder-generator)
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-# ✨ Features
+## ✨ Features
 
-- ⚡ No installation required
-- 🐚 Runs with PowerShell 7+
-- 🌎 Windows, Linux, macOS, and WSL support
-- 📁 Generate folders and files from Markdown definitions
-- 📝 Keep human-readable documentation and the FileForge definition in the same `.md` file
-- 🧩 Use a dedicated `fileforge` fenced code block for the project definition
-- 🎯 Only the first `fileforge` block is processed
+- 📁 Generate complete folder and file structures
+- 📝 Define project structures using readable Markdown files
+- 🧩 Use dedicated `dxwiz` fenced code blocks
+- 🌳 Build hierarchical structures using indentation
+- 🔗 Create files and folders using nested paths such as `src/components/Button.tsx`
 - 💬 Support full-line and inline comments
-- 🌳 Support indentation-based project trees
-- 📂 Support nested folders and files
-- 🔗 Support single-line folder/file paths
-- 🧱 Support special folder names such as `[dynamic-route]` and `(group)`
-- 🎨 Automatically select templates based on file extension or file name
-- 🏷 Automatically add generated file-path headers where supported
-- 👀 Preview changes before execution
-- 📊 Show detailed create/update/skip actions
-- 🛡 Protect existing files by default
-- ♻️ Force replacement of existing files when required
-- ⚠️ Detect duplicate physical paths
-- 📚 Support multiple reusable project definitions
+- 🧱 Support special folder names such as `[id]` and `(group)`
+- 🎨 Automatically provide basic starter content for supported file types
+- 🏷 Add generated file-path headers to files that support them
+- 👀 Preview planned changes before modifying the target
+- 🛡 Protect existing files during normal generation
+- ♻️ Optionally overwrite existing files
+- ⚠️ Detect and report duplicate physical paths
+- 📊 Generate execution reports with validation, planning, execution statistics, warnings, and the resulting file structure
+- 📚 Maintain multiple reusable project definitions
 
 ---
 
-# 🚀 Quick Start
+## 🚀 Commands
 
-## Requirements
+File & Folder Generator provides three independent commands.
 
-FileForge requires:
+Each command operates on the **selected Markdown definition** containing a dxwiz block. The commands can be used independently; Preview is not required before Generate.
 
-- PowerShell 7+
+### File & Folder Generator: Preview
 
-Check your PowerShell version:
+Analyzes the selected definition and generates an execution report without modifying the target project.
 
-```powershell
-$PSVersionTable.PSVersion
-```
+The report includes information such as:
 
-PowerShell is available as `pwsh` on Linux and macOS.
+- Validation status
+- Planned folders and files
+- Duplicate paths
+- Warnings
+- Planned file structure
 
-Supported platforms:
+Use Preview when you want to inspect the planned result before making changes.
 
-- Windows
-- Linux
-- macOS
-- WSL
+### File & Folder Generator: Generate
 
----
+Generates the folders and files described by the selected definition.
 
-# 📥 Get FileForge
+Existing files are protected according to the normal generation behavior, while newly required files and folders are created.
 
-Clone the repository:
+The execution report shows what was planned and what actually happened.
 
-```bash
-git clone https://github.com/dxwizco/FileForge.git
-```
+### File & Folder Generator: Generate and Overwrite
 
-Enter the FileForge directory:
+Generates the defined structure and overwrites existing files when necessary.
 
-```bash
-cd FileForge
-```
+> ⚠️ **Caution**: This command can replace existing file contents. Make sure you have reviewed the definition and have appropriate backups or version control before using it on important files.
 
-FileForge does not require a traditional installation.
+The execution report identifies files that were updated as part of the operation.
 
----
+### Commands are independent
 
-# 🧠 How FileForge Works
+Preview is **not required** before Generate or Generate and Overwrite.
 
-FileForge follows a simple process:
+You can choose whichever command matches what you want to do:
 
 ```text
-Markdown Definition
-        │
-        ▼
-   Parse Definition
-        │
-        ▼
-   Build File Tree
-        │
-        ▼
-     Validate
-        │
-        ▼
-      Plan
-        │
-        ▼
- Preview or Execute
-```
-
-A definition describes the folders and files you want to create.
-
-FileForge then:
-
-1. Reads the Markdown definition.
-2. Finds the first `fileforge` code block.
-3. Parses the folder/file structure.
-4. Validates the resulting tree.
-5. Determines what actions are required.
-6. Displays the planned structure.
-7. Creates or updates files only when execution is requested.
-
----
-
-# 📄 FileForge Definitions
-
-FileForge definitions are Markdown files containing a `fileforge` fenced code block.
-
-Built-in definitions are stored inside:
-
-```text
-files/
-```
-
-For example:
-
-```text
-files/test.md
-files/todo.md
-```
-
-Unlike the older `.txt` format, FileForge definitions are now Markdown files.
-
-This allows you to keep:
-
-- Documentation
-- Explanations
-- Commands
-- Examples
-- The actual FileForge definition
-
-all inside one file.
-
-# 📍 Definition Selection & Path Scenarios
-
-FileForge supports definitions located either inside the FileForge repository or anywhere else on the filesystem.
-
-The location from which `FileForge.ps1` is launched does not determine where the definition or target must be located.
-
-The following three paths are handled independently:
-
-```text
-Current working directory
-          │
-          ├── FileForge script location
-          │
-          ├── Definition path (-File)
-          │
-          └── Target path (-Target)
-```
-
-This allows FileForge to be launched from any directory while using either built-in or external definitions and generating into either an internal or external target.
-
----
-
-## Case 1 — No `-File`
-
-When `-File` is omitted, FileForge uses the default definition:
-
-```text
-files/test.md
-```
-
-Run from the FileForge directory:
-
-### Windows PowerShell
-
-```powershell
-.\FileForge.ps1 -Target ".\Project"
-```
-
-### Linux / macOS / WSL
-
-```bash
-pwsh ./FileForge.ps1 -Target "./Project"
-```
-
-The definition resolves to:
-
-```text
-D:\WIP-DOC\FileForge\files\test.md
-```
-
-on the example Windows installation.
-
-Expected output includes:
-
-```text
-Definition:
- D:\WIP-DOC\FileForge\files\test.md
-
-Target:
- D:\WIP-DOC\FileForge\Project
-```
-
-The exact paths depend on where FileForge is installed.
-
----
-
-## Case 2 — Built-in Definition by Name
-
-A definition can be selected by its name.
-
-For example:
-
-### Windows PowerShell
-
-```powershell
-.\FileForge.ps1 -File "test" -Target ".\Project"
-```
-
-### Linux / macOS / WSL
-
-```bash
-pwsh ./FileForge.ps1 -File "test" -Target "./Project"
-```
-
-FileForge resolves:
-
-```text
-test
-```
-
-to:
-
-```text
-files/test.md
-```
-
-For example:
-
-```text
-D:\WIP-DOC\FileForge\files\test.md
-```
-
-Expected output:
-
-```text
-Definition:
- D:\WIP-DOC\FileForge\files\test.md
-
-Target:
- D:\WIP-DOC\FileForge\Project
+File & Folder Generator: Preview
+File & Folder Generator: Generate
+File & Folder Generator: Generate and Overwrite
 ```
 
 ---
 
-## Case 3 — Built-in Definition With `.md` Extension
+## 📄 Getting Started
 
-The built-in definition can also be specified with its extension.
+Create or choose a Markdown definition describing the project structure you want to generate.
 
-### Windows PowerShell
-
-```powershell
-.\FileForge.ps1 -File "test.md" -Target ".\Project"
-```
-
-### Linux / macOS / WSL
-
-```bash
-pwsh ./FileForge.ps1 -File "test.md" -Target "./Project"
-```
-
-This resolves to the same definition:
-
-```text
-files/test.md
-```
-
-For example:
-
-```text
-D:\WIP-DOC\FileForge\files\test.md
-```
-
-Therefore these two commands select the same definition:
-
-```powershell
-.\FileForge.ps1 -File "test" -Target ".\Project"
-
-.\FileForge.ps1 -File "test.md" -Target ".\Project"
-```
-
----
-
-## Case 4 — External Absolute Definition
-
-A definition can be stored completely outside the FileForge repository.
-
-Example:
-
-```text
-D:\ProjectDefinitions\backend.md
-```
-
-### Windows PowerShell
-
-```powershell
-.\FileForge.ps1 `
-    -File "D:\ProjectDefinitions\backend.md" `
-    -Target "D:\Projects\ProjectX"
-```
-
-Or on one line:
-
-```powershell
-.\FileForge.ps1 -File "D:\ProjectDefinitions\backend.md" -Target "D:\Projects\ProjectX"
-```
-
-### Linux / macOS / WSL
-
-```bash
-pwsh ./FileForge.ps1 \
-    -File "/home/user/ProjectDefinitions/backend.md" \
-    -Target "/home/user/Projects/ProjectX"
-```
-
-FileForge uses the specified external definition directly.
-
-It does **not** search:
-
-```text
-files/backend.md
-```
-
-when an explicit external path was provided.
-
-Expected output:
-
-```text
-Definition:
- D:\ProjectDefinitions\backend.md
-
-Target:
- D:\Projects\ProjectX
-```
-
----
-
-## Case 5 — External Relative Definition
-
-A definition can also be specified using a relative path.
-
-For example, suppose the current directory is:
-
-```text
-D:\Projects\ProjectX
-```
-
-and the definition is:
-
-```text
-D:\Projects\ProjectX\definitions\backend.md
-```
-
-### Windows PowerShell
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" `
-    -File ".\definitions\backend.md" `
-    -Target "."
-```
-
-Or:
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" -File ".\definitions\backend.md" -Target "."
-```
-
-### Linux / macOS / WSL
-
-```bash
-pwsh "/home/user/FileForge/FileForge.ps1" \
-    -File "./definitions/backend.md" \
-    -Target "."
-```
-
-The relative definition path is resolved from the **current working directory**, not from the FileForge installation directory.
-
-For the Windows example:
-
-```text
-Current directory:
-D:\Projects\ProjectX
-
-Specified:
-.\definitions\backend.md
-
-Resolved:
-D:\Projects\ProjectX\definitions\backend.md
-```
-
----
-
-## Case 6 — FileForge Launched From Outside Its Directory
-
-FileForge can be launched from any working directory.
-
-For example, suppose:
-
-```text
-FileForge:
-D:\WIP-DOC\FileForge\FileForge.ps1
-
-Current directory:
-D:\WIP-DOC\TestFolder
-```
-
-Run:
-
-### Windows PowerShell
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" `
-    -File "test" `
-    -Target "D:\WIP-DOC\FileForge\Project"
-```
-
-The current directory does not change how the built-in definition is located.
-
-FileForge still uses:
-
-```text
-D:\WIP-DOC\FileForge\files\test.md
-```
-
-and generates into:
-
-```text
-D:\WIP-DOC\FileForge\Project
-```
-
-Expected:
-
-```text
-Definition:
- D:\WIP-DOC\FileForge\files\test.md
-
-Target:
- D:\WIP-DOC\FileForge\Project
-```
-
----
-
-## Case 7 — External Definition + External Target
-
-FileForge can be launched from one directory while both the definition and target are somewhere else.
-
-Example:
-
-```text
-FileForge:
-D:\WIP-DOC\FileForge\FileForge.ps1
-
-Definition:
-D:\WIP-DOC\TestFolder\remote.md
-
-Target:
-D:\Projects\ProjectX
-
-Current directory:
-D:\WIP-DOC\TestFolder
-```
-
-Run:
-
-### Windows PowerShell
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" `
-    -File "D:\WIP-DOC\TestFolder\remote.md" `
-    -Target "D:\Projects\ProjectX"
-```
-
-Or one line:
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" -File "D:\WIP-DOC\TestFolder\remote.md" -Target "D:\Projects\ProjectX"
-```
-
-### Linux / macOS / WSL
-
-```bash
-pwsh "/home/user/FileForge/FileForge.ps1" \
-    -File "/home/user/TestFolder/remote.md" \
-    -Target "/home/user/Projects/ProjectX"
-```
-
-Expected:
-
-```text
-Definition:
- D:\WIP-DOC\TestFolder\remote.md
-
-Target:
- D:\Projects\ProjectX
-```
-
-This is the fully external scenario:
-
-```text
-FileForge installation   → one location
-Definition               → another location
-Target                   → another location
-Current directory        → can be another location again
-```
-
----
-
-## Case 8 — External Definition + Target Inside FileForge
-
-The definition and target do not have to be on the same side of the FileForge installation.
-
-For example:
-
-```text
-FileForge:
-D:\WIP-DOC\FileForge\FileForge.ps1
-
-Definition:
-D:\WIP-DOC\TestFolder\remote.md
-
-Target:
-D:\WIP-DOC\FileForge\Project
-```
-
-Run:
-
-### Windows PowerShell
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" `
-    -File "D:\WIP-DOC\TestFolder\remote.md" `
-    -Target "D:\WIP-DOC\FileForge\Project"
-```
-
-### Linux / macOS / WSL
-
-```bash
-pwsh "/home/user/FileForge/FileForge.ps1" \
-    -File "/home/user/TestFolder/remote.md" \
-    -Target "/home/user/FileForge/Project"
-```
-
-The important point is that `-File` and `-Target` are resolved independently.
-
----
-
-# 📊 Complete Path Scenario Matrix
-
-The following scenarios cover the supported combinations of FileForge location, definition location, target location, and current working directory.
-
-| Case | FileForge launched from | Definition | Target            | Result |
-| ---- | ----------------------- | ---------- | ----------------- | ------ |
-| 1    | Inside FileForge        | Built-in   | Inside FileForge  | ✅     |
-| 2    | Inside FileForge        | Built-in   | Outside FileForge | ✅     |
-| 3    | Inside FileForge        | External   | Outside FileForge | ✅     |
-| 4    | Outside FileForge       | Built-in   | Inside FileForge  | ✅     |
-| 5    | Outside FileForge       | Built-in   | Outside FileForge | ✅     |
-| 6    | Outside FileForge       | External   | Outside FileForge | ✅     |
-| 7    | Outside FileForge       | External   | Inside FileForge  | ✅     |
-
-The important behavior is:
-
-```text
-Built-in definition
-        │
-        └── resolved relative to FileForge
-
-Explicit absolute definition
-        │
-        └── used directly
-
-Explicit relative definition
-        │
-        └── resolved relative to the current working directory
-
-Target
-        │
-        └── resolved independently from the definition
-```
-
----
-
-# ❌ Missing Definition Behavior
-
-FileForge must not silently fall back to another definition when the requested definition cannot be found.
-
-For example:
-
-### Windows PowerShell
-
-```powershell
-.\FileForge.ps1 -File "doesnotexist" -Target ".\Project"
-```
-
-### Linux / macOS / WSL
-
-```bash
-pwsh ./FileForge.ps1 -File "doesnotexist" -Target "./Project"
-```
-
-Expected behavior:
-
-```text
-❌ Definition error
-
-FileForge definition was not found.
-
-Specified definition:
-doesnotexist
-
-Expected location:
-D:\WIP-DOC\FileForge\files\doesnotexist.md
-
-Please verify that the definition name is correct or provide an explicit path.
-```
-
-FileForge must **not** silently fall back to:
-
-```text
-files/test.md
-```
-
-when:
-
-```text
-doesnotexist
-```
-
-was explicitly requested.
-
----
-
-# ❌ Missing External Definition
-
-The same rule applies to explicit paths.
-
-For example:
-
-```powershell
-.\FileForge.ps1 `
-    -File "D:\ProjectDefinitions\backend.md" `
-    -Target "D:\Projects\ProjectX"
-```
-
-If the file does not exist, FileForge reports a definition error.
-
-It must not attempt to replace the requested file with another definition from:
-
-```text
-files/
-```
-
-Example:
-
-```text
-❌ Definition error
-
-Specified definition file was not found.
-
-Specified:
-D:\ProjectDefinitions\backend.md
-
-Resolved path:
-D:\ProjectDefinitions\backend.md
-
-Please verify that the file exists and that the path is correct.
-```
-
----
-
-# 🧪 Recommended Path Testing
-
-When testing changes to FileForge's definition resolution, test these commands independently.
-
-### 1. Default definition
-
-```powershell
-.\FileForge.ps1 -Target ".\Project"
-```
-
-### 2. Built-in definition by name
-
-```powershell
-.\FileForge.ps1 -File "test" -Target ".\Project"
-```
-
-### 3. Built-in definition with extension
-
-```powershell
-.\FileForge.ps1 -File "test.md" -Target ".\Project"
-```
-
-### 4. Missing built-in definition
-
-```powershell
-.\FileForge.ps1 -File "doesnotexist" -Target ".\Project"
-```
-
-### 5. External absolute definition
-
-```powershell
-.\FileForge.ps1 `
-    -File "D:\ProjectDefinitions\backend.md" `
-    -Target "D:\Projects\ProjectX"
-```
-
-### 6. External relative definition
-
-From the directory containing the definition:
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" `
-    -File ".\definitions\backend.md" `
-    -Target "."
-```
-
-### 7. FileForge launched from outside its directory
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" `
-    -File "test" `
-    -Target "D:\Projects\ProjectX"
-```
-
-### 8. External definition + target inside FileForge
-
-```powershell
-& "D:\WIP-DOC\FileForge\FileForge.ps1" `
-    -File "D:\WIP-DOC\TestFolder\remote.md" `
-    -Target "D:\WIP-DOC\FileForge\Project"
-```
-
-For Linux / macOS / WSL, use the equivalent `pwsh` commands with POSIX paths:
-
-```bash
-pwsh "/path/to/FileForge/FileForge.ps1" \
-    -File "/path/to/definitions/backend.md" \
-    -Target "/path/to/Projects/ProjectX"
-```
-
-These tests verify that **definition selection and target selection remain independent of the current working directory and the FileForge installation directory**.
-
-# 🧩 The `fileforge` Definition Block
-
-FileForge identifies the project definition using a fenced Markdown code block named:
-
-```text
-fileforge
-```
-
-Example:
+A definition contains a `dxwiz` fenced code block:
 
 ````markdown
-```fileforge
-TestProject/
+# Example Application
+
+This definition creates a basic React application.
+
+```dxwiz
+target: "D:/projects/project-folder"
+
+my-app/
     src/
-        app.ts
+        components/
+            Button.tsx
+        App.tsx
+        main.tsx
+
+    public/
+        index.html
+
+    package.json
     README.md
 ```
 ````
 
-The `fileforge` block is the machine-readable part of the Markdown file.
+The Markdown outside the `dxwiz` block is documentation.
 
-Everything else can be normal Markdown documentation.
+The `dxwiz` block contains the project definition that File & Folder Generator processes.
 
 ---
 
-## Only the First `fileforge` Block Is Processed
+## 🧩 Definition Format
 
-A definition file can contain multiple code blocks.
+A definition is a normal Markdown (`.md`) file containing a `dxwiz` fenced code block.
+
+The definition specifies:
+
+1. **The `dxwiz` block** — identifies the project definition.
+2. **The `target` path** — specifies where the structure will be created.
+3. **The project tree** — describes the folders and files to create.
+4. **Indentation** — defines parent-child relationships.
+5. **Trailing `/`** — identifies folders.
+
+### Basic Example
+
+````markdown
+```dxwiz
+target: "D:/projects/project-folder"
+
+src/
+    components/
+        Button.tsx
+    styles/
+        main.css
+
+README.md
+package.json
+```
+````
+
+This represents:
+
+```text
+project-folder/
+├── src/
+│   ├── components/
+│   │   └── Button.tsx
+│   ├── styles/
+│   │   └── main.css
+├── README.md
+└── package.json
+```
+
+---
+
+## `dxwiz`
+
+The opening fence must use the `dxwiz` language identifier:
+
+````markdown
+```dxwiz
+...
+```
+````
+
+This tells File & Folder Generator that the fenced block contains a project definition.
+
+Only the **first `dxwiz` block** in a Markdown definition is processed.
+
+This allows the same Markdown file to contain documentation, examples, or other code blocks without processing every block as a project definition.
 
 For example:
 
 ````markdown
 # My Project
 
-Run FileForge with:
+Example command:
 
 ```bash
-pwsh ./FileForge.ps1 -File test -Target ./App
+some-command
 ```
 
-The actual definition:
+Actual project definition:
 
-```fileforge
-TestProject/
+```dxwiz
+target: "D:/projects/project-folder"
+
+my-project/
     src/
         app.ts
-```
-
-Another example:
-
-```fileforge
-AnotherProject/
     README.md
 ```
 ````
 
-FileForge processes **only the first `fileforge` block**.
+The `bash` block is ignored, and the first `dxwiz` block is processed.
 
-The second `fileforge` block is ignored.
-
-This allows the Markdown file to contain examples and additional documentation without accidentally generating multiple project trees.
+Additional `dxwiz` blocks are ignored.
 
 ---
 
-# 🌳 Definition Format
+## `target`
 
-The definition block uses indentation to represent folders and files.
+The `target` property specifies the destination directory where the defined project structure will be created.
 
-Example:
+```text
+target: "D:/projects/project-folder"
+```
 
-```fileforge
-TestProject/
-    src/
-        components/
-            Button.tsx
-        styles/
-            main.css
+The target path is part of the definition, so the definition contains both:
 
-    public/
-        index.html
+- **What to create**
+- **Where to create it**
 
-    README.md
+For example:
+
+```dxwiz
+target: "D:/projects/project-folder"
+
+src/
+    app.ts
+
+README.md
+```
+
+The resulting files are created relative to:
+
+```text
+D:/projects/project-folder
+```
+
+---
+
+## 🌳 Project Structure
+
+Everything after the `target` declaration describes the folders and files to create.
+
+A folder is identified by a trailing `/`:
+
+```dxwiz
+src/
+    components/
+        Button.tsx
 ```
 
 This produces:
 
 ```text
-TestProject
-├── src
-│   ├── components
-│   │   └── Button.tsx
-│   └── styles
-│       └── main.css
-├── public
-│   └── index.html
-└── README.md
+src/
+└── components/
+    └── Button.tsx
+```
+
+File names do not require a special marker:
+
+```dxwiz
+README.md
+package.json
 ```
 
 ---
 
-# 📐 Indentation
+## ↔️ Indentation
 
-Indentation defines the relationship between folders and files.
+Indentation defines the hierarchy of folders and files.
 
-Spaces are recommended.
+For example:
 
-Tabs are also supported.
-
-Example:
-
-```fileforge
+```dxwiz
 src/
     components/
         Button.tsx
@@ -876,87 +282,54 @@ src/
 means:
 
 ```text
-src
-└── components
+src/
+└── components/
     └── Button.tsx
 ```
 
-Do not mix indentation styles unnecessarily within the same definition.
+The indentation level determines the parent-child relationship.
+
+Use consistent indentation throughout a definition.
 
 ---
 
-# 📂 Nested Folders
+## 🔗 Single-Line Paths
 
-Folders can contain other folders and files.
+You can create nested files or folders directly using a path:
 
-```fileforge
-src/
-    components/
-        buttons/
-            PrimaryButton.tsx
-            SecondaryButton.tsx
+```dxwiz
+target: "D:/projects/project-folder"
 
-        forms/
-            LoginForm.tsx
-
-    styles/
-        main.css
-```
-
----
-
-# 🔗 Single-Line Paths
-
-Folders and files can also be represented on a single line.
-
-```fileforge
+src/components/Button.tsx
+src/utils/helpers.ts
 public/index.html
 ```
 
 This creates:
 
 ```text
-public
+src/
+├── components/
+│   └── Button.tsx
+├── utils/
+│   └── helpers.ts
+└── ...
+
+public/
 └── index.html
 ```
 
-You can therefore use either:
-
-```fileforge
-public/
-    index.html
-```
-
-or:
-
-```fileforge
-public/index.html
-```
+Single-line paths are useful when you do not need to explicitly describe every intermediate directory.
 
 ---
 
-# 📄 Files at the Root
+## 📂 Multiple Root Folders
 
-Files do not have to be inside a folder.
+A definition can contain multiple root-level folders and files.
 
-Example:
+```dxwiz
+target: "D:/projects/project-folder"
 
-```fileforge
-README.md
-LICENSE
-.gitignore
-package.json
-```
-
-These are created directly inside the target directory.
-
----
-
-# 📁 Multiple Root Folders
-
-A definition can contain multiple root folders.
-
-```fileforge
 Frontend/
     src/
         app.ts
@@ -969,1017 +342,459 @@ Documentation/
     README.md
 ```
 
----
-
-# 🧱 Special Folder Names
-
-FileForge supports folder names commonly used by modern frameworks.
-
-For example:
-
-```fileforge
-app/
-    [dynamic-route]/
-        page.tsx
-
-    (group)/
-        page.tsx
-```
-
 This creates:
 
 ```text
-app
-├── [dynamic-route]
-│   └── page.tsx
-└── (group)
-    └── page.tsx
+project-folder/
+├── Frontend/
+│   └── src/
+│       └── app.ts
+├── Backend/
+│   └── src/
+│       └── server.ts
+└── Documentation/
+    └── README.md
 ```
-
-These names are treated as normal filesystem paths.
 
 ---
 
-# 💬 Comments
+## 🧱 Special Folder Names
 
-Comments can be used inside a `fileforge` definition.
+Special folder names used by frameworks are treated as normal filesystem paths.
 
-## Full-Line Comments
+For example:
 
-```fileforge
-# Application files
+```dxwiz
+target: "D:/projects/project-folder"
+
+app/
+    [id]/
+        page.tsx
+
+    (group)/
+        dashboard/
+            page.tsx
+```
+
+This allows structures containing names such as:
+
+- `[id]`
+- `[dynamic-route]`
+- `(group)`
+- `(admin)`
+
+without requiring special syntax in the definition.
+
+---
+
+## 💬 Comments
+
+Comments can be placed on their own line:
+
+```dxwiz
+target: "D:/projects/project-folder"
+
+# Application source    ← This is separate Comment line
 
 src/
     app.ts
 ```
 
-Lines beginning with `#` are ignored.
+Inline comments are also supported:
+
+```dxwiz
+target: "D:/projects/project-folder"
+
+src/app.ts # Application entry point    ← This is inline comment
+```
+
+Comments are ignored when the project structure is built and generated.
 
 ---
 
-## Inline Comments
+## 🎨 Templates
 
-Comments can also appear after a path.
+File & Folder Generator can provide basic starter content automatically for supported file types.
 
-```fileforge
-src/app.ts # Application entry point
-```
+When a generated file matches a supported template, the corresponding basic template content is added to the file.
 
-The comment is ignored when FileForge builds the path.
+### Supported File Extensions
 
----
+| Extension | Language / Format     |
+| --------- | --------------------- |
+| `.cs`     | C#                    |
+| `.css`    | CSS                   |
+| `.env`    | Environment variables |
+| `.go`     | Go                    |
+| `.html`   | HTML                  |
+| `.js`     | JavaScript            |
+| `.json`   | JSON                  |
+| `.jsx`    | React JavaScript      |
+| `.md`     | Markdown              |
+| `.ps1`    | PowerShell            |
+| `.py`     | Python                |
+| `.rs`     | Rust                  |
+| `.scss`   | SCSS                  |
+| `.sh`     | Shell                 |
+| `.sql`    | SQL                   |
+| `.ts`     | TypeScript            |
+| `.tsx`    | React TypeScript      |
+| `.vue`    | Vue                   |
+| `.yaml`   | YAML                  |
+| `.yml`    | YAML                  |
 
-# 📏 Definition Rules
+### Supported File Names
 
-Use filesystem paths inside the `fileforge` block.
+Templates can also be selected based on specific file names.
 
-Correct:
+| File name             | Purpose                    |
+| --------------------- | -------------------------- |
+| `Dockerfile`          | Docker definition          |
+| `Dockerfile.backend`  | Backend Docker definition  |
+| `Dockerfile.frontend` | Frontend Docker definition |
+| `compose.yaml`        | Docker Compose             |
+| `compose.dev.yaml`    | Development Docker Compose |
+| `.dockerignore`       | Docker ignore rules        |
+| `.gitignore`          | Git ignore rules           |
 
-```fileforge
-src/components/Button.tsx
-```
-
-Avoid wrapping paths in quotes:
-
-```fileforge
-"src/components/Button.tsx"
-```
-
-Avoid trailing commas:
-
-```fileforge
-src/components/Button.tsx,
-```
-
-The definition is a filesystem tree, not a JSON, CSV, or PowerShell command.
-
----
-
-# ⚙️ Command Usage
-
-FileForge supports preview and execution modes.
-
-## Preview Mode
-
-Preview is the default mode.
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./xxx
-```
-
-Preview does not create or modify files.
-
-It displays the planned project structure.
-
-The `-File` value can be:
-
-- a built-in definition name such as `test`
-- a built-in definition name with `.md`, such as `test.md`
-- an explicit relative path such as `.\definitions\backend.md`
-- an explicit absolute path such as `D:\Definitions\backend.md`
-
-If `-File` is omitted entirely, FileForge uses the built-in:
-
-```text
-files/test.md
-```
-
-Explicit paths must exist and are never replaced by a fallback definition.
+The exact starter content is provided by the templates included with the extension.
 
 ---
 
-## Preview With Actions
+## 🏷 Generated File Headers
 
-Use `-ShowActions` to see what FileForge plans to do.
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./xxx -ShowActions
-```
-
-Example:
-
-```text
-Preview Actions
-================
-⏭️ Skipped: TestProject/README.md
-✨ Create: TestProject/app/page.tsx
-```
-
----
-
-## Execution Mode
-
-Use `-Run` to actually create files.
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./xxx -Run
-```
-
-Existing files are skipped by default.
-
----
-
-## Using an External Definition
-
-FileForge can use a Markdown definition outside the built-in `files/` directory.
-
-### Absolute Path
-
-Windows:
-
-```powershell
-& "D:\Tools\FileForge\FileForge.ps1" `
-    -File "D:\ProjectDefinitions\backend.md" `
-    -Target "D:\Projects\ProjectX"
-```
-
-Linux / macOS / WSL:
-
-```bash
-pwsh "/home/user/Tools/FileForge/FileForge.ps1" \
-    -File "/home/user/ProjectDefinitions/backend.md" \
-    -Target "/home/user/Projects/ProjectX"
-```
-
-### Relative Path
-
-```powershell
-.\FileForge.ps1 `
-    -File ".\definitions\backend.md" `
-    -Target ".\Project"
-```
-
-Relative definition paths are resolved from the current working directory.
-
-If the specified external definition does not exist, FileForge stops with a definition error.
-
-It does not fall back to `files/test.md`.
-
----
-
-## Execution With Actions
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./xxx -Run -ShowActions
-```
-
-This displays the actions that were actually executed.
-
----
-
-## Force Execution
-
-Use `-Force` together with `-Run` to replace existing files.
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./xxx -Run -Force
-```
-
-Example:
-
-```text
-♻️ Updated: TestProject/README.md
-```
-
-`-Force` should be used carefully because existing file contents may be replaced.
-
----
-
-## Force Execution With Actions
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./xxx -Run -Force -ShowActions
-```
-
----
-
-# 🖥 Running FileForge on Different Platforms
-
-The FileForge engine is the same on all supported platforms, but the PowerShell invocation can differ.
-
----
-
-## Run From the FileForge Folder (Output Inside FileForge Folder)
-
-When your terminal is already inside the FileForge directory.
-
-### Linux / macOS / WSL
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./Project
-```
-
-### Windows PowerShell
-
-```powershell
-.\FileForge.ps1 -File test -Target ".\Project"
-```
-
----
-
-## Run From the FileForge Folder and Generate Elsewhere
-
-FileForge can generate into another directory.
-
-### Linux / macOS / WSL
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./Projects/App
-```
-
-If the path contains spaces:
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target "./Projects Folder/App"
-```
-
-### Windows PowerShell
-
-```powershell
-.\FileForge.ps1 -File test -Target "D:\Projects\App"
-```
-
----
-
-## Run From Any Location
-
-FileForge can also be executed using its full script path.
-
-### Linux / macOS / WSL
-
-```bash
-pwsh "/home/user/Tools/FileForge/FileForge.ps1" -File test -Target "/home/user/Projects/App"
-```
-
-### Windows PowerShell
-
-```powershell
-& "D:\Tools\FileForge\FileForge.ps1" -File test -Target "D:\Projects\App"
-```
-
----
-
-# ⚙️ Parameters and Options
-
-## Main Parameters
-
-| Parameter | Description                                                                            |
-| --------- | -------------------------------------------------------------------------------------- |
-| `-File`   | Selects a built-in definition by name or an explicit Markdown definition file by path. |
-| `-Target` | Defines where the generated project will be created.                                   |
-
-Example:
-
-```bash
--File test
-```
-
-uses the built-in definition:
-
-```text
-files/test.md
-```
-
-The `.md` extension can also be specified:
-
-```bash
--File test.md
-```
-
-Both forms resolve to:
-
-```text
-files/test.md
-```
-
-An external definition can be supplied using an absolute path:
-
-```powershell
--File "D:\ProjectDefinitions\backend.md"
-```
-
-or a relative path:
-
-```powershell
--File ".\definitions\backend.md"
-```
-
-Explicit paths must exist. FileForge does not fall back to a built-in definition when an explicitly supplied path is missing.
-
-Example:
-
-```bash
--Target ./Projects/App
-```
-
-generates inside:
-
-```text
-./Projects/App
-```
-
----
-
-## Available Options
-
-| Option         | Description                                                                     |
-| -------------- | ------------------------------------------------------------------------------- |
-| `-Run`         | Execute file creation/update operations. Existing files are skipped by default. |
-| `-ShowActions` | Show detailed create/update/skip actions.                                       |
-| `-Force`       | Replace existing files during execution. Requires `-Run`.                       |
-| `-List`        | List available FileForge definitions.                                           |
-| `-Help`        | Display command help.                                                           |
-| `-Version`     | Display the FileForge version.                                                  |
-
----
-
-# 📋 Built-In Commands
-
-## List Definitions
-
-```bash
-pwsh ./FileForge.ps1 -List
-```
-
-Example:
-
-```text
-Available FileForge Definitions
-===============================
-
-  test
-  todo
-```
-
-The names shown by `-List` are the names used with `-File`.
+For every generated file whose file type supports generated headers, File & Folder Generator adds a header identifying the generated file path.
 
 For example:
 
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./App
+```text
+src/components/Button.tsx
 ```
 
-loads:
+can receive:
 
 ```text
-files/test.md
+// src/components/Button.tsx
 ```
+
+The header format depends on the file type.
+
+When a supported template is available, the generated file can contain both:
+
+- The generated file-path header
+- Basic starter template content
+
+This makes generated files easier to identify and gives supported file types useful initial content immediately.
 
 ---
 
-## Help
+## 👀 Preview
 
-```bash
-pwsh ./FileForge.ps1 -Help
-```
+Preview mode lets you inspect the planned operation without modifying the target project.
 
-The help command displays the available modes, options, and examples.
-
----
-
-## Version
-
-```bash
-pwsh ./FileForge.ps1 -Version
-```
-
-Example:
+The generated report can include:
 
 ```text
-FileForge v2.0.0
+PLAN SUMMARY:
+--------------------------
+Folders planned: 12
+Files planned:   35
+Duplicates found: 1
 ```
+
+It also displays the planned file structure and warnings.
+
+Preview is optional. It is provided as a convenient way to inspect changes before generation.
 
 ---
 
-# 🛡 Safety Behavior
+## 🛡 Generation and Existing Files
 
-FileForge is designed to avoid accidentally destroying existing work.
+The extension distinguishes between different outcomes during execution, including:
 
-## Preview
+- ✨ Newly created files
+- 📁 Newly created folders
+- 🔄 Updated or overwritten files
+- ⏭️ Skipped existing files
+- ⚠️ Duplicate paths
+- ❌ Invalid definitions
 
-Without `-Run`:
+Normal **Generate** operations protect existing files according to the extension's standard generation behavior.
 
-```text
-MODE: PREVIEW
-```
-
-No files are created or modified.
-
----
-
-## Execution Without Force
-
-With:
-
-```bash
--Run
-```
-
-FileForge creates missing files.
-
-Existing files are skipped.
-
-Example:
-
-```text
-⏭️ Skipped: README.md
-```
+**Generate and Overwrite** is available when you intentionally want existing files to be replaced.
 
 ---
 
-## Execution With Force
+## ⚠️ Validation and Duplicate Detection
 
-With:
+Definitions are validated before execution.
 
-```bash
--Run -Force
-```
+Duplicate physical paths are detected and reported.
 
-existing files can be replaced.
+For example:
 
-Example:
+```dxwiz
+target: "D:/projects/project-folder"
 
-```text
-♻️ Updated: README.md
-```
-
-Use `-Force` deliberately when existing file contents should be replaced.
-
----
-
-# ⚠️ Duplicate Paths
-
-FileForge validates the planned tree before execution.
-
-If the same physical path is defined more than once, FileForge reports it.
-
-Example:
-
-```fileforge
-TestProject/
+my-project/
     README.md
     README.md
 ```
 
-FileForge reports:
+The definition contains the same physical path twice.
+
+The execution report identifies the duplicate:
 
 ```text
-⚠️ Duplicate path detected:
-.../TestProject/README.md
+Duplicates found: 1
+
+WARNINGS:
+--------------------------
+  ⚠ Duplicate path detected:
+  D:/projects/project-folder/my-project/README.md
 ```
 
-The duplicate is included in the plan, but FileForge tracks the duplicate separately in its validation and execution summary.
+Duplicate detection helps identify accidental repetition in project definitions.
 
-This is useful for detecting accidental duplicate definitions.
+A duplicate warning does not by itself mean that every operation is blocked; the selected command and execution mode determine how the operation proceeds.
 
 ---
 
-# 🎨 Templates
+## 📊 Execution Reports
 
-FileForge can automatically select a starter template based on the generated file's extension or name.
+File & Folder Generator produces an execution report for operations.
 
-## Supported File Extensions
+The report is:
 
-| Extension | Template / Purpose         |
-| --------- | -------------------------- |
-| `.cs`     | C# starter                 |
-| `.css`    | CSS starter                |
-| `.env`    | Environment variables      |
-| `.go`     | Go starter                 |
-| `.html`   | HTML starter               |
-| `.js`     | JavaScript starter         |
-| `.json`   | JSON starter               |
-| `.jsx`    | React JavaScript component |
-| `.md`     | Markdown document          |
-| `.ps1`    | PowerShell script          |
-| `.py`     | Python starter             |
-| `.rs`     | Rust starter               |
-| `.scss`   | SCSS starter               |
-| `.sh`     | Shell script               |
-| `.sql`    | SQL script                 |
-| `.ts`     | TypeScript starter         |
-| `.tsx`    | React TypeScript component |
-| `.vue`    | Vue component starter      |
-| `.yaml`   | YAML configuration         |
-| `.yml`    | YAML configuration         |
+- Opened as a Markdown output file beside the source definition
+- Given the `.output.md` suffix
+- Opened in VS Code
+- Also displayed in the VS Code Output panel
 
-## Supported File Names
-
-FileForge also supports templates for common special files:
-
-| File Name             | Purpose                                  |
-| --------------------- | ---------------------------------------- |
-| `Dockerfile`          | Docker container definition              |
-| `Dockerfile.backend`  | Backend Docker definition                |
-| `Dockerfile.frontend` | Frontend Docker definition               |
-| `compose.yaml`        | Docker Compose configuration             |
-| `compose.dev.yaml`    | Docker Compose development configuration |
-| `.dockerignore`       | Docker ignore rules                      |
-| `.gitignore`          | Git ignore rules                         |
-
----
-
-# 🏷 Generated File Headers
-
-Where supported by the selected template, FileForge can add the generated file path as a header.
-
-For example, generating:
+For example:
 
 ```text
-TestProject/components/Button.tsx
+testfile.md
+testfile.output.md
 ```
 
-may produce a file containing a header such as:
+A report can contain:
 
 ```text
-// TestProject/components/Button.tsx
-```
+File & Folder Generator Execution Report
+==========================
 
-This makes it easier to identify where a generated file belongs.
+Mode: GENERATE_AND_OVERWRITE
+Status: SUCCESS
+Target: D:/projects/project-folder
+Validation Status: Valid
+Action: Files and folders generated with existing files overwritten
 
----
-
-# 📊 Execution Summary
-
-FileForge displays a summary after planning or execution.
-
-Example preview:
-
-```text
-=========================
- FileForge Summary
-=========================
-
-Mode: PREVIEW
-
+PLAN SUMMARY:
+--------------------------
 Folders planned: 12
 Files planned:   35
 Duplicates found: 1
 
-=========================
+EXECUTION SUMMARY:
+--------------------------
+Folders created: 0
+Files created:   0
+Files updated:   35
+Files skipped:   0
 ```
 
-Example execution:
+The report also includes warnings and the resulting file structure.
 
-```text
-=========================
- FileForge Summary
-=========================
-
-MODE: EXECUTION
-
-Folders created: 12
-Files created:   34
-Files updated:   0
-Files skipped:   1
-Duplicates found: 1
-
-=========================
-```
-
-The exact numbers depend on the selected definition and the state of the target directory.
+This provides a clear record of what the extension planned and what actually happened.
 
 ---
 
-# 🎯 Target Directory
+## 📚 Reusable Definitions
 
-The `-Target` parameter determines where FileForge generates the requested structure.
+Definitions can be stored and reused across projects.
 
 For example:
 
-```powershell
-.\FileForge.ps1 -File test -Target "D:\Projects\App"
-```
-
-FileForge generates the project under:
-
 ```text
-D:\Projects\App
+definitions/
+├── react-app.md
+├── node-api.md
+├── python-api.md
+└── cli-tool.md
 ```
 
-When generating into the FileForge repository itself, use a dedicated test directory such as:
+Each definition can contain documentation together with its corresponding `dxwiz` project structure.
 
-```text
-xxx/
-```
+Reusable definitions make project scaffolding:
 
-It is recommended to generate real projects into a separate target directory rather than directly into the FileForge source directory.
+- Easy to read
+- Easy to review
+- Easy to version control
+- Easy to share
+- Easy to customize
+- Consistent across projects
 
 ---
 
-# 🧪 Example Definition
+## 🧪 Complete Example
 
-The repository includes:
-
-```text
-files/test.md
-```
-
-This definition is intentionally designed to exercise common FileForge functionality, including:
-
-- root-level folders
-- root-level files
-- nested folders
-- single-line paths
-- comments
-- inline comments
-- special folder names
-- multiple file types
-- duplicate paths
-- template selection
-
-You can preview it with:
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./xxx
-```
-
-Then execute it with:
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./xxx -Run
-```
-
-The `xxx/` directory is intended as a local test output directory and is ignored by Git.
-
----
-
-# 📂 Repository Structure
-
-The main repository structure is:
-
-```text
-FileForge/
-│
-├── assets/
-│   └── images/
-│
-├── files/
-│   ├── test.md
-│   └── todo.md
-│
-├── src/
-│   ├── Engine/
-│   │   ├── Executor.ps1
-│   │   ├── MarkdownParser.ps1
-│   │   ├── Models.ps1
-│   │   ├── Planner.ps1
-│   │   ├── Renderer.ps1
-│   │   ├── TreeParser.ps1
-│   │   └── Validator.ps1
-│   │
-│   ├── templates/
-│   │   └── *.ps1
-│   │
-│   └── Templates.ps1
-│
-├── FileForge.ps1
-├── README.md
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── SECURITY.md
-└── LICENSE
-```
-
-Generated test output such as:
-
-```text
-xxx/
-```
-
-is not part of the source project and is ignored by Git.
-
----
-
-# 📸 Examples
-
-### ✅ New Project
-
-If the target does not contain the generated files, FileForge creates the required folders and files.
-
-![Full Generation](assets/images/full-generation.png)
-
-### ✅ Existing Project
-
-If some files already exist, FileForge skips them by default while creating missing files.
-
-![Partial Generation](assets/images/partial-generation.png)
-
-### ✅ No Changes Required
-
-If all files already exist and contain content, FileForge can complete without modifying them.
-
-![No Changes Required](assets/images/no-changes.png)
-
-### Generated Project Structure
-
-FileForge preserves the directory structure described by the definition.
-
-![Generated Project Structure](assets/images/generated-folder-tree.png)
-
-### Generated File Header
-
-Templates can automatically add the generated file path to created files.
-
-![Generated File Header](assets/images/file-header-example.png)
-
----
-
-# 🔍 Common Mistakes
-
-## Using the wrong definition extension
-
-FileForge definitions use:
-
-```text
-files/test.md
-```
-
-not:
-
-```text
-files/test.txt
-```
-
----
-
-## Assuming `-File` always searches `files/`
-
-A plain definition name searches FileForge's built-in definitions:
-
-```powershell
--File "test"
-```
-
-This resolves to:
-
-```text
-<FileForge>/files/test.md
-```
-
-However, an explicit path is treated as an actual file path:
-
-```powershell
--File ".\definitions\backend.md"
-```
-
-or:
-
-```powershell
--File "D:\Definitions\backend.md"
-```
-
-If the explicit path does not exist, FileForge reports an error.
-
-It does not automatically search:
-
-```text
-files/
-```
-
-as a fallback.
-
-This prevents accidental execution of the wrong definition because of a misspelled path.
-
-For example:
-
-```powershell
--File "D:\Definitions\backed.md"
-```
-
-does not fall back to:
-
-```text
-files/test.md
-```
-
-Instead, FileForge reports that the specified definition file was not found.
-
----
-
-## Using the wrong code block identifier
-
-The project definition must use:
+The following definition demonstrates nested folders, single-line paths, comments, special folder names, infrastructure files, templates, and duplicate detection:
 
 ````markdown
-```fileforge
-...
+# Example Project
+
+```dxwiz
+target: "D:/projects/project-folder"
+
+# Root project folder
+my-project/
+    # Application source
+    app/
+        components/
+            Button.tsx
+
+        [id]/
+            page.tsx
+
+        (admin)/
+            dashboard/
+                page.tsx
+
+        styles/
+            main.css
+
+    # Single-line path
+    public/index.html
+
+    # Infrastructure files
+    infra/
+        Dockerfile
+        compose.yaml
+
+    # Project configuration
+    .gitignore
+    package.json
+    README.md
 ```
 ````
 
-Do not use:
-
-````markdown
-```text
-...
-```
-````
-
-or:
-
-````markdown
-```bash
-...
-```
-````
-
-for the actual definition.
-
----
-
-## Expecting multiple definitions in one file
-
-Only the first `fileforge` block is processed.
-
-Additional `fileforge` blocks are ignored.
-
----
-
-## Forgetting `-Run`
-
-This:
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./App
-```
-
-is preview mode.
-
-It does not create files.
-
-To execute:
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./App -Run
-```
-
----
-
-## Using `-Force` without understanding its effect
-
-`-Force` allows existing files to be replaced.
-
-Use:
-
-```bash
--Run -Force
-```
-
-only when you intentionally want existing generated files updated.
-
----
-
-## Generating directly inside the FileForge repository
-
-For testing, use a separate ignored directory such as:
+The resulting structure is:
 
 ```text
-xxx/
+project-folder/
+└── my-project/
+    ├── app/
+    │   ├── components/
+    │   │   └── Button.tsx
+    │   ├── [id]/
+    │   │   └── page.tsx
+    │   ├── (admin)/
+    │   │   └── dashboard/
+    │   │       └── page.tsx
+    │   └── styles/
+    │       └── main.css
+    ├── public/
+    │   └── index.html
+    ├── infra/
+    │   ├── Dockerfile
+    │   └── compose.yaml
+    ├── .gitignore
+    ├── package.json
+    └── README.md
 ```
 
-For real projects, use a separate project directory.
+Supported files can receive their corresponding starter template content and generated file-path headers.
 
 ---
 
-# 🧭 Recommended Workflow
+## 🧭 Recommended Usage
 
-A safe workflow is:
+Choose the command that matches your intended operation:
 
-### 1. Choose a definition
+1. **Create or choose a definition.**
+2. **Use Preview** if you want to inspect the planned changes.
+3. **Use Generate** to create the project while protecting existing files.
+4. **Use Generate and Overwrite** when existing files should intentionally be replaced.
+5. **Review the execution report** for validation results, warnings, duplicates, and execution statistics.
 
-```bash
-pwsh ./FileForge.ps1 -List
-```
-
-### 2. Preview it
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./Projects/App
-```
-
-### 3. Review the planned structure
-
-Check the folders, files, and duplicate warnings.
-
-### 4. Preview with actions if needed
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./Projects/App -ShowActions
-```
-
-### 5. Execute
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./Projects/App -Run
-```
-
-### 6. Use force only when necessary
-
-```bash
-pwsh ./FileForge.ps1 -File test -Target ./Projects/App -Run -Force
-```
-
-This preview-first workflow makes FileForge safer for existing projects.
+Preview is optional; the three commands can be used independently.
 
 ---
 
-# 🗺 Roadmap
+## 🗺 Roadmap
 
 Possible future improvements include:
 
-- Interactive definition selection
+- Additional language and framework templates
+- Additional validation rules
 - Template variables
-- Additional template engines
-- Remote definition repositories
-- More built-in project profiles
-- Project metadata support
-- Interactive project creation wizard
+- Custom template packs
+- Remote or shared definitions
+
+The roadmap may evolve based on user feedback and project needs.
 
 ---
 
-# 🤝 Contributing
+## 🤝 Contributing
 
 Contributions are welcome.
 
-If you improve FileForge, add templates, fix bugs, improve documentation, or suggest features, please consider opening an issue or pull request.
+You can help by:
 
-See [CONTRIBUTING](CONTRIBUTING.md) for contribution guidelines.
+- Adding templates
+- Adding project definitions
+- Improving parsing and validation
+- Improving documentation
+- Fixing bugs
+- Suggesting new features
 
----
-
-# 🏢 About
-
-FileForge is an open-source project created and maintained by **DXWIZ**.
-
-Learn more about DXWIZ at **[dxwiz.com](https://dxwiz.com)**.
-
-For questions or support, visit the **[Contact page](https://dxwiz.com/contact)**.
+Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for contribution guidelines.
 
 ---
 
-# 📜 License
+## 🆘 Support
 
-FileForge is licensed under the MIT License.
+For questions, issues, feature requests, or other support:
 
-See the [LICENSE](LICENSE) file for details.
+- See [`SUPPORT.md`](SUPPORT.md)
+- Report bugs through the project's issue tracker
+- Review the project documentation and examples
 
 ---
 
-# ⭐ Why FileForge?
+## 🏢 About
 
-Many projects begin with the same repetitive setup tasks:
+File & Folder Generator is an open-source project created and maintained by **DXWIZ**.
 
-- Creating folders
-- Adding standard files
-- Preparing starter templates
-- Maintaining consistent structures
-- Repeating the same setup for every new project
+Learn more about DXWIZ at [dxwiz.com](https://dxwiz.com).
 
-FileForge turns those repeated steps into reusable definitions.
+For additional information, visit the [DXWIZ Contact page](https://dxwiz.com/contact).
+
+---
+
+## 📜 License
+
+File & Folder Generator is licensed under the MIT License.
+
+See [`LICENSE`](LICENSE) for the complete license text.
+
+---
+
+## ⭐ Why File & Folder Generator?
+
+Starting a project often means repeating the same setup:
+
+- Creating directories
+- Creating standard files
+- Adding starter code
+- Setting up configuration files
+- Recreating familiar project structures
+
+File & Folder Generator turns that repetitive work into reusable Markdown definitions.
 
 **Define once.**
 
-**Preview safely.**
+**Preview when you want to inspect.**
 
-**Generate anytime.**
+**Generate consistently.**

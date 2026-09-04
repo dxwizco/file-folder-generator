@@ -1,6 +1,6 @@
-// src/core/models/ForgeValidation.ts
+// src/core/models/DXWIZValidation.ts
 
-export interface ForgeValidation {
+export interface DXWIZValidation {
   errors: string[];
   warnings: string[];
   duplicateCount: number;

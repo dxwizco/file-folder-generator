@@ -17,3 +17,4 @@ pnpm-workspace.yaml
 _docs/**
 *.log
 src/**
+tsconfig.test.json

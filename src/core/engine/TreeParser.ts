@@ -1,10 +1,10 @@
 // src/core/engine/TreeParser.ts
 
-import type { ForgeNode } from "../models/ForgeNode";
+import type { DXWIZNode } from "../models/DXWIZNode";
 
 export class TreeParser {
   /**
-   * Convert FileForge scaffold lines into ForgeNode objects.
+   * Convert File & Folder Generator scaffold lines into DXWIZNode objects.
    *
    * Indentation uses 4 spaces per level.
    * Tabs are treated as 4 spaces.
@@ -21,8 +21,8 @@ export class TreeParser {
    * public/index.html
    * components/Button.tsx
    */
-  parse(lines: string[], target: string): ForgeNode[] {
-    const nodes: ForgeNode[] = [];
+  parse(lines: string[], target: string): DXWIZNode[] {
+    const nodes: DXWIZNode[] = [];
 
     const stack: StackEntry[] = [
       {
@@ -114,7 +114,7 @@ export class TreeParser {
 
         const relativePath = getRelativePath(target, fullPath);
 
-        const node: ForgeNode = {
+        const node: DXWIZNode = {
           name: part,
           relativePath,
           fullPath,
@@ -162,7 +162,7 @@ function joinPath(parent: string, child: string): string {
 }
 
 /**
- * Calculate the path relative to the FileForge target.
+ * Calculate the path relative to the File & Folder Generator target.
  */
 function getRelativePath(target: string, fullPath: string): string {
   const normalizedTarget = target.replace(/\\/g, "/").replace(/\/+$/, "");

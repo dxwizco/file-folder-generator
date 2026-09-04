@@ -1,12 +1,12 @@
 // src/core/reporting/ReportRenderer.ts
 
-import type { ForgeNode } from "../models/ForgeNode";
-import type { ForgeResult } from "../models/ForgeResult";
+import type { DXWIZNode } from "../models/DXWIZNode";
+import type { DXWIZResult } from "../models/DXWIZResult";
 
-export type ForgeRunMode = "PREVIEW" | "GENERATE" | "GENERATE_AND_OVERWRITE";
+export type DXWIZRunMode = "PREVIEW" | "GENERATE" | "GENERATE_AND_OVERWRITE";
 
 /**
- * Renders a complete FileForge execution report.
+ * Renders a complete File & Folder Generator execution report.
  *
  * The same report format is used for:
  * - Preview
@@ -18,7 +18,7 @@ export type ForgeRunMode = "PREVIEW" | "GENERATE" | "GENERATE_AND_OVERWRITE";
  * even when thousands of files are generated.
  */
 export class ReportRenderer {
-  public render(result: ForgeResult, mode: ForgeRunMode): string {
+  public render(result: DXWIZResult, mode: DXWIZRunMode): string {
     const lines: string[] = [];
 
     /*
@@ -27,7 +27,7 @@ export class ReportRenderer {
      * ============================================================
      */
 
-    lines.push("FileForge Execution Report");
+    lines.push("File & Folder Generator Execution Report");
     lines.push("==========================");
     lines.push("");
 
@@ -127,150 +127,254 @@ export class ReportRenderer {
 
     /*
      * ============================================================
-     * Full File Structure
+     * File Structure
      * ============================================================
      *
-     * This intentionally comes after all summaries.
-     * The tree may contain thousands of lines.
+     * Render the structure as a tree instead of a flat list.
+     *
+     * Example:
+     *
+     * TestProject
+     * ├── app
+     * │   ├── (group)
+     * │   │   └── page.tsx ✨
+     * │   └── [dynamic-route]
+     * │       └── page.tsx ✨
+     * └── README.md ⏭
+     *
+     * The tree is intentionally rendered as plain text here.
+     * The output file writer can wrap it in a Markdown code block.
      */
 
     lines.push("");
     lines.push("FILE STRUCTURE");
     lines.push("--------------------------");
 
-    for (const node of result.nodes) {
-      lines.push(this.renderNode(node));
-    }
+    lines.push(...this.renderTree(result.nodes));
 
     return lines.join("\n");
   }
 
   /**
-   * Render one node from the FileForge tree.
+   * Render the DXWIZ nodes as a tree.
+   *
+   * DXWIZNode.depth is used to determine the nesting level.
+   * The nodes are expected to already be ordered in tree/preorder
+   * order by the planner.
    */
-  private renderNode(node: ForgeNode): string {
-    const icon = node.isFolder ? "📁" : "📄";
-
-    if (node.isFolder) {
-      return `${icon} ${node.relativePath}  [FOLDER]`;
+  private renderTree(nodes: DXWIZNode[]): string[] {
+    if (nodes.length === 0) {
+      return [];
     }
 
-    const action = node.action.toUpperCase();
+    const lines: string[] = [];
 
-    return `${icon} ${node.relativePath}  [${action}]`;
+    for (let index = 0; index < nodes.length; index++) {
+      const node = nodes[index];
+
+      /*
+       * Root node has no tree prefix.
+       */
+      if (node.depth === 0) {
+        lines.push(this.renderTreeNode(node));
+        continue;
+      }
+
+      let prefix = "";
+
+      /*
+       * Each level between the root and the current node
+       * represents an ancestor.
+       *
+       * Example:
+       *
+       * TestProject
+       * ├── app
+       * │   ├── testfolder
+       *
+       * When rendering "testfolder", the "app" ancestor
+       * has another sibling ("components", "public", etc.),
+       * so we need to keep the vertical │ connector.
+       *
+       * The important part is that we check the ancestor's
+       * own depth, not the depth before it.
+       */
+      for (let depth = 1; depth < node.depth; depth++) {
+        prefix += this.hasFollowingSiblingAtDepth(nodes, index, depth)
+          ? "│   "
+          : "    ";
+      }
+
+      /*
+       * Add the connector for the current node.
+       */
+      prefix += this.isLastSibling(nodes, index) ? "└── " : "├── ";
+
+      lines.push(`${prefix}${this.renderTreeNode(node)}`);
+    }
+
+    return lines;
+  }
+
+  /**
+   * Determine whether the ancestor at the specified depth
+   * has another sibling after its branch.
+   *
+   * This determines whether a vertical │ connector should
+   * continue through that level.
+   */
+  private hasFollowingSiblingAtDepth(
+    nodes: DXWIZNode[],
+    currentIndex: number,
+    depth: number,
+  ): boolean {
+    /*
+     * Find the nearest ancestor at the requested depth
+     * before the current node.
+     */
+    let ancestorIndex = currentIndex - 1;
+
+    while (ancestorIndex >= 0) {
+      if (nodes[ancestorIndex].depth === depth) {
+        break;
+      }
+
+      ancestorIndex--;
+    }
+
+    if (ancestorIndex < 0) {
+      return false;
+    }
+
+    /*
+     * Look forward from the ancestor.
+     *
+     * If another node exists at the same depth before
+     * returning to a shallower depth, that ancestor has
+     * a following sibling.
+     */
+    for (let index = ancestorIndex + 1; index < nodes.length; index++) {
+      const node = nodes[index];
+
+      if (node.depth < depth) {
+        break;
+      }
+
+      if (node.depth === depth) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Determine whether a parent at the given depth has another
+   * sibling after the current node's branch.
+   *
+   * This controls whether a vertical │ connector should continue
+   * through that level.
+   */
+  private parentHasFollowingSibling(
+    nodes: DXWIZNode[],
+    currentIndex: number,
+    parentDepth: number,
+  ): boolean {
+    /*
+     * Find the nearest parent node before the current node.
+     */
+    let parentIndex = currentIndex - 1;
+
+    while (parentIndex >= 0) {
+      const parent = nodes[parentIndex];
+
+      if (parent.depth === parentDepth) {
+        break;
+      }
+
+      parentIndex--;
+    }
+
+    if (parentIndex < 0) {
+      return false;
+    }
+
+    /*
+     * Look after the parent for another node at the same
+     * depth before the tree returns to a shallower level.
+     */
+    for (let index = parentIndex + 1; index < nodes.length; index++) {
+      const node = nodes[index];
+
+      if (node.depth < parentDepth) {
+        break;
+      }
+
+      if (node.depth === parentDepth) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Determine whether a node is the final sibling at its depth.
+   */
+  private isLastSibling(nodes: DXWIZNode[], index: number): boolean {
+    const currentDepth = nodes[index].depth;
+
+    for (let next = index + 1; next < nodes.length; next++) {
+      const nextDepth = nodes[next].depth;
+
+      /*
+       * A shallower node means the current branch has ended.
+       */
+      if (nextDepth < currentDepth) {
+        return true;
+      }
+
+      /*
+       * A node at the same depth means there is another sibling.
+       */
+      if (nextDepth === currentDepth) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Render a single tree node.
+   *
+   * Folders are rendered without an icon.
+   * Files use an action icon instead of [CREATE], [UPDATE], etc.
+   */
+  private renderTreeNode(node: DXWIZNode): string {
+    if (node.isFolder) {
+      return node.name;
+    }
+
+    return `${node.name} ${this.getActionIcon(node.action)}`;
+  }
+
+  /**
+   * Return a compact visual icon for the file action.
+   */
+  private getActionIcon(action: DXWIZNode["action"]): string {
+    switch (action) {
+      case "create":
+        return "✨";
+
+      case "update":
+        return "🔄";
+
+      case "skip":
+        return "⏭";
+
+      default:
+        return "";
+    }
   }
 }
-
-// // === src/core/reporting/ReportRenderer.ts
-
-// import type { ForgeNode } from "../models/ForgeNode";
-// import type { ForgeResult } from "../models/ForgeResult";
-
-// export type ForgeRunMode = "PREVIEW" | "GENERATE" | "GENERATE_AND_OVERWRITE";
-
-// /**
-//  * Renders a complete FileForge execution report.
-//  *
-//  * The same report format is used for:
-//  * - Preview
-//  * - Generate
-//  * - Generate and Overwrite
-//  */
-// export class ReportRenderer {
-//   public render(result: ForgeResult, mode: ForgeRunMode): string {
-//     const lines: string[] = [];
-
-//     lines.push("FileForge Execution");
-//     lines.push("==================");
-//     lines.push("");
-
-//     lines.push(`Target: ${result.definition.target}`);
-//     lines.push("");
-
-//     lines.push("Plan Statistics");
-//     lines.push("---------------");
-//     lines.push(`Folders: ${result.plan.folders}`);
-//     lines.push(`Files:   ${result.plan.files}`);
-//     lines.push("");
-
-//     lines.push("Validation");
-//     lines.push("----------");
-//     lines.push(`Status: ${result.validation.valid ? "Valid" : "Invalid"}`);
-
-//     if (result.validation.warnings.length > 0) {
-//       lines.push("");
-//       lines.push("Warnings:");
-
-//       for (const warning of result.validation.warnings) {
-//         lines.push(`  ⚠ ${warning}`);
-//       }
-//     }
-
-//     if (result.validation.errors.length > 0) {
-//       lines.push("");
-//       lines.push("Errors:");
-
-//       for (const error of result.validation.errors) {
-//         lines.push(`  ✖ ${error}`);
-//       }
-//     }
-
-//     lines.push("");
-
-//     lines.push("File Structure");
-//     lines.push("--------------");
-
-//     for (const node of result.nodes) {
-//       lines.push(this.renderNode(node));
-//     }
-
-//     /*
-//      * Keep execution statistics only when an actual
-//      * execution result exists.
-//      *
-//      * Preview must not invent filesystem statistics.
-//      */
-//     if (result.execution) {
-//       lines.push("");
-//       lines.push("Execution Statistics");
-//       lines.push("---------------------");
-//       lines.push(`Folders created: ${result.execution.folders}`);
-//       lines.push(`Files created:   ${result.execution.created}`);
-//       lines.push(`Files updated:   ${result.execution.updated}`);
-//       lines.push(`Files skipped:   ${result.execution.skipped}`);
-//     } else if (mode === "PREVIEW") {
-//       lines.push("");
-//       lines.push("No filesystem changes were made.");
-//     }
-
-//     lines.push("");
-//     lines.push("=========================");
-//     lines.push(" FileForge Summary");
-//     lines.push("=========================");
-//     lines.push("");
-
-//     lines.push(`Mode: ${mode}`);
-//     lines.push(`Status: ${result.validation.valid ? "SUCCESS" : "FAILED"}`);
-//     lines.push("");
-
-//     lines.push(`Folders planned: ${result.plan.folders}`);
-//     lines.push(`Files planned:   ${result.plan.files}`);
-
-//     const duplicateCount = result.validation.duplicateCount ?? 0;
-//     lines.push(`Duplicates found:  ${duplicateCount}`);
-
-//     return lines.join("\n");
-//   }
-
-//   private renderNode(node: ForgeNode): string {
-//     const icon = node.isFolder ? "📁" : "📄";
-
-//     if (node.isFolder) {
-//       return `${icon} ${node.relativePath}  [FOLDER]`;
-//     }
-
-//     const action = node.action.toUpperCase();
-
-//     return `${icon} ${node.relativePath}  [${action}]`;
-//   }
-// }

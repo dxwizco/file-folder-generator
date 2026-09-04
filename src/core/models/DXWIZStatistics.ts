@@ -1,11 +1,11 @@
-// src/core/models/ForgeStatistics.ts
+// src/core/models/DXWIZStatistics.ts
 
-export interface ForgePlanStats {
+export interface DXWIZPlanStats {
   folders: number;
   files: number;
 }
 
-export interface ForgeExecutionStats {
+export interface DXWIZExecutionStats {
   folders: number;
   created: number;
   updated: number;

@@ -4,7 +4,7 @@ export interface TemplateProvider {
   /**
    * Generate the initial content for a file.
    *
-   * The path is relative to the FileForge target.
+   * The path is relative to the File & Folder Generator target.
    */
   getTemplate(path: string): string;
 }

@@ -1,11 +1,11 @@
 // src/core/models/index.ts
 
-export type { ForgeAction, ForgeNode } from "./ForgeNode";
+export type { DXWIZAction, DXWIZNode } from "./DXWIZNode";
 
-export type { ForgeDefinition } from "./ForgeDefinition";
+export type { DXWIZDefinition } from "./DXWIZDefinition";
 
-export type { ForgeValidation } from "./ForgeValidation";
+export type { DXWIZValidation } from "./DXWIZValidation";
 
-export type { ForgePlanStats, ForgeExecutionStats } from "./ForgeStatistics";
+export type { DXWIZPlanStats, DXWIZExecutionStats } from "./DXWIZStatistics";
 
-export type { ForgeResult } from "./ForgeResult";
+export type { DXWIZResult } from "./DXWIZResult";

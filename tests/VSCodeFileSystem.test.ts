@@ -114,12 +114,10 @@ describe("VSCodeFileSystem", () => {
 
   describe("readFile", () => {
     it("reads UTF-8 file content", async () => {
-      mockReadFile.mockResolvedValue(
-        new TextEncoder().encode("Hello FileForge"),
-      );
+      mockReadFile.mockResolvedValue(new TextEncoder().encode("Hello DXWIZ"));
 
       await expect(fileSystem.readFile("D:\\Projects\\test.txt")).resolves.toBe(
-        "Hello FileForge",
+        "Hello DXWIZ",
       );
 
       expect(mockReadFile).toHaveBeenCalledTimes(1);
@@ -139,7 +137,7 @@ describe("VSCodeFileSystem", () => {
       mockWriteFile.mockResolvedValue(undefined);
 
       await expect(
-        fileSystem.writeFile("D:\\Projects\\test.txt", "Hello FileForge"),
+        fileSystem.writeFile("D:\\Projects\\test.txt", "Hello DXWIZ"),
       ).resolves.toBeUndefined();
 
       expect(mockWriteFile).toHaveBeenCalledTimes(1);
@@ -149,7 +147,7 @@ describe("VSCodeFileSystem", () => {
       mockWriteFile.mockRejectedValue(new Error("Write failed"));
 
       await expect(
-        fileSystem.writeFile("D:\\Projects\\test.txt", "Hello FileForge"),
+        fileSystem.writeFile("D:\\Projects\\test.txt", "Hello DXWIZ"),
       ).rejects.toThrow("Write failed");
     });
   });

@@ -1,8 +1,8 @@
-// tests/ForgeEngine.test.ts
+// tests/DXWIZEngine.test.ts
 
 import { describe, expect, it } from "vitest";
 
-import { ForgeEngine } from "../src/core/engine/ForgeEngine";
+import { DXWIZEngine } from "../src/core/engine/DXWIZEngine";
 import type { FileSystem } from "../src/core/ports/FileSystem";
 import type { TemplateProvider } from "../src/core/ports/TemplateProvider";
 
@@ -62,17 +62,17 @@ function createTemplateProvider(): TemplateProvider {
   };
 }
 
-describe("ForgeEngine", () => {
+describe("DXWIZEngine", () => {
   it("parses, validates and plans a valid definition", async () => {
     const target = "D:\\Projects\\TestProject";
 
     const fileSystem = createFileSystem({}, [target]);
     const templateProvider = createTemplateProvider();
 
-    const engine = new ForgeEngine(fileSystem, templateProvider);
+    const engine = new DXWIZEngine(fileSystem, templateProvider);
 
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "${target}"
 
 TestProject/
@@ -116,10 +116,10 @@ TestProject/
     const fileSystem = createFileSystem({}, [target]);
     const templateProvider = createTemplateProvider();
 
-    const engine = new ForgeEngine(fileSystem, templateProvider);
+    const engine = new DXWIZEngine(fileSystem, templateProvider);
 
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "${target}"
 
 src/
@@ -142,10 +142,10 @@ src/
     const fileSystem = createFileSystem({}, [target]);
     const templateProvider = createTemplateProvider();
 
-    const engine = new ForgeEngine(fileSystem, templateProvider);
+    const engine = new DXWIZEngine(fileSystem, templateProvider);
 
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "${target}"
 
 src/
@@ -186,10 +186,10 @@ README.md
 
     const templateProvider = createTemplateProvider();
 
-    const engine = new ForgeEngine(fileSystem, templateProvider);
+    const engine = new DXWIZEngine(fileSystem, templateProvider);
 
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "${target}"
 
 README.md
@@ -224,10 +224,10 @@ README.md
 
     const templateProvider = createTemplateProvider();
 
-    const engine = new ForgeEngine(fileSystem, templateProvider);
+    const engine = new DXWIZEngine(fileSystem, templateProvider);
 
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "${target}"
 
 README.md
@@ -256,10 +256,10 @@ README.md
     const fileSystem = createFileSystem({}, [target]);
     const templateProvider = createTemplateProvider();
 
-    const engine = new ForgeEngine(fileSystem, templateProvider);
+    const engine = new DXWIZEngine(fileSystem, templateProvider);
 
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "${target}"
 
 README.md
@@ -284,10 +284,10 @@ README.md
     const fileSystem = createFileSystem();
     const templateProvider = createTemplateProvider();
 
-    const engine = new ForgeEngine(fileSystem, templateProvider);
+    const engine = new DXWIZEngine(fileSystem, templateProvider);
 
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: ""
 
 README.md
@@ -305,10 +305,10 @@ README.md
     const fileSystem = createFileSystem();
     const templateProvider = createTemplateProvider();
 
-    const engine = new ForgeEngine(fileSystem, templateProvider);
+    const engine = new DXWIZEngine(fileSystem, templateProvider);
 
     const content = `
-\`\`\`fileforge
+\`\`\`dxwiz
 target: "${target}"
 
 README.md

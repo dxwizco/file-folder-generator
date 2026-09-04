@@ -1,9 +1,9 @@
-// src/core/models/ForgeDefinition.ts
+// src/core/models/DXWIZDefinition.ts
 
-export interface ForgeDefinition {
+export interface DXWIZDefinition {
   /**
    * Target directory where the generated structure will be created.
-   * This is taken from:  target: "path" inside the fileforge block.
+   * This is taken from:  target: "path" inside the dxwiz block.
    */
   target: string;
 

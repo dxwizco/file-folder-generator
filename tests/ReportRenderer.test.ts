@@ -4,15 +4,15 @@ import { describe, expect, it } from "vitest";
 
 import { ReportRenderer } from "../src/core/reporting/ReportRenderer";
 
-import type { ForgeResult } from "../src/core/models/ForgeResult";
-import type { ForgeNode } from "../src/core/models/ForgeNode";
+import type { DXWIZResult } from "../src/core/models/DXWIZResult";
+import type { DXWIZNode } from "../src/core/models/DXWIZNode";
 
 describe("ReportRenderer", () => {
-  const nodes: ForgeNode[] = [
+  const nodes: DXWIZNode[] = [
     {
       name: "TestProject",
       relativePath: "TestProject",
-      fullPath: "D:/WIP-Learn/file-forge-test/TestProject",
+      fullPath: "D:/WIP-Learn/file-folder-generator-test/TestProject",
       isFolder: true,
       depth: 0,
       action: "folder",
@@ -20,7 +20,7 @@ describe("ReportRenderer", () => {
     {
       name: "app",
       relativePath: "TestProject/app",
-      fullPath: "D:/WIP-Learn/file-forge-test/TestProject/app",
+      fullPath: "D:/WIP-Learn/file-folder-generator-test/TestProject/app",
       isFolder: true,
       depth: 1,
       action: "folder",
@@ -28,7 +28,8 @@ describe("ReportRenderer", () => {
     {
       name: "page.tsx",
       relativePath: "TestProject/app/page.tsx",
-      fullPath: "D:/WIP-Learn/file-forge-test/TestProject/app/page.tsx",
+      fullPath:
+        "D:/WIP-Learn/file-folder-generator-test/TestProject/app/page.tsx",
       isFolder: false,
       depth: 2,
       action: "create",
@@ -36,16 +37,16 @@ describe("ReportRenderer", () => {
     {
       name: "README.md",
       relativePath: "TestProject/README.md",
-      fullPath: "D:/WIP-Learn/file-forge-test/TestProject/README.md",
+      fullPath: "D:/WIP-Learn/file-folder-generator-test/TestProject/README.md",
       isFolder: false,
       depth: 1,
       action: "skip",
     },
   ];
 
-  const baseResult: ForgeResult = {
+  const baseResult: DXWIZResult = {
     definition: {
-      target: "D:/WIP-Learn/file-forge-test",
+      target: "D:/WIP-Learn/file-folder-generator-test",
       lines: [],
     },
     nodes,
@@ -62,13 +63,16 @@ describe("ReportRenderer", () => {
   };
 
   describe("preview reports", () => {
-    it("renders the FileForge execution header", () => {
+    it("renders the DXWIZ execution header", () => {
       const renderer = new ReportRenderer();
 
       const report = renderer.render(baseResult, "PREVIEW");
 
-      expect(report).toContain("FileForge Execution");
-      expect(report).toContain("Target: D:/WIP-Learn/file-forge-test");
+      expect(report).toContain("File & Folder Generator Execution");
+
+      expect(report).toContain(
+        "Target: D:/WIP-Learn/file-folder-generator-test",
+      );
     });
 
     it("renders preview mode", () => {
@@ -104,24 +108,24 @@ describe("ReportRenderer", () => {
   });
 
   describe("file structure", () => {
-    it("renders folders", () => {
+    it("renders the file structure as a tree", () => {
       const renderer = new ReportRenderer();
 
       const report = renderer.render(baseResult, "PREVIEW");
 
-      expect(report).toContain("📁 TestProject  [FOLDER]");
-
-      expect(report).toContain("📁 TestProject/app  [FOLDER]");
+      expect(report).toContain("FILE STRUCTURE");
+      expect(report).toContain("TestProject");
+      expect(report).toContain("├── app");
+      expect(report).toContain("└── README.md");
     });
 
-    it("renders files", () => {
+    it("renders file actions using icons", () => {
       const renderer = new ReportRenderer();
 
       const report = renderer.render(baseResult, "PREVIEW");
 
-      expect(report).toContain("📄 TestProject/app/page.tsx  [CREATE]");
-
-      expect(report).toContain("📄 TestProject/README.md  [SKIP]");
+      expect(report).toContain("page.tsx ✨");
+      expect(report).toContain("README.md ⏭");
     });
   });
 
@@ -129,13 +133,13 @@ describe("ReportRenderer", () => {
     it("renders validation warnings", () => {
       const renderer = new ReportRenderer();
 
-      const result: ForgeResult = {
+      const result: DXWIZResult = {
         ...baseResult,
         validation: {
           valid: true,
           errors: [],
           warnings: [
-            "Duplicate path detected: D:/WIP-Learn/file-forge-test/TestProject/README.md",
+            "Duplicate path detected: D:/WIP-Learn/file-folder-generator-test/TestProject/README.md",
           ],
           duplicateCount: 1,
         },
@@ -152,7 +156,7 @@ describe("ReportRenderer", () => {
     it("renders validation errors", () => {
       const renderer = new ReportRenderer();
 
-      const result: ForgeResult = {
+      const result: DXWIZResult = {
         ...baseResult,
         validation: {
           valid: false,
@@ -174,7 +178,7 @@ describe("ReportRenderer", () => {
     it("renders execution statistics when execution exists", () => {
       const renderer = new ReportRenderer();
 
-      const result: ForgeResult = {
+      const result: DXWIZResult = {
         ...baseResult,
         execution: {
           folders: 2,
@@ -215,7 +219,7 @@ describe("ReportRenderer", () => {
     it("supports GENERATE mode", () => {
       const renderer = new ReportRenderer();
 
-      const result: ForgeResult = {
+      const result: DXWIZResult = {
         ...baseResult,
         execution: {
           folders: 2,
@@ -233,7 +237,7 @@ describe("ReportRenderer", () => {
     it("supports GENERATE_AND_OVERWRITE mode", () => {
       const renderer = new ReportRenderer();
 
-      const result: ForgeResult = {
+      const result: DXWIZResult = {
         ...baseResult,
         execution: {
           folders: 2,
