@@ -1,8 +1,8 @@
 {
   "name": "dxwiz-file-folder-generator",
-  "displayName": "File & Folder Generator",
+  "displayName": "File and Folder Generator",
   "description": "Create and maintain files and folders from Markdown-based definitions. Preview changes, validate structures, and safely create, update, or overwrite files with optional templates and generated headers.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "DXWIZ",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "./assets/images/icon.png",
@@ -45,6 +45,7 @@
     "markdown definition",
     "workspace setup",
     "project setup",
+    "file folder generator",
     "file and folder generator"
   ],
   "main": "./dist/interfaces/vscode/extension.js",

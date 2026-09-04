@@ -12,6 +12,13 @@ Changes for the next release will be listed here.
 
 ---
 
+## [0.1.1] - 2026-09-04
+
+### Changed
+
+Renamed the extension display name from File & Folder Generator to File and Folder Generator to improve Marketplace searchability.
+Added search keywords for file and folder generator queries.
+
 ## [0.1.0] - 2026-09-04
 
 ### Added
